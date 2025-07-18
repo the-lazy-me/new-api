@@ -468,7 +468,7 @@ const Home = () => {
         title: '选择模型',
         description: '查看定价并选择适合您需求的AI模型',
         icon: <IconList size="extra-large" />,
-        url: 'https://www.galaapi.com/pricing',
+        url: 'https://api.qhaigc.net/pricing',
         color: '#F59E0B'
       },
       {
