@@ -1,0 +1,31 @@
+/* ==================== 暗黑主题优化 ==================== */
+/* 暗黑主题下的模糊球效果 */
+.dark .blur-ball-indigo {
+  background: #4f46e5;
+  opacity: 0.3;
+}
+
+.dark .blur-ball-teal {
+  background: #0d9488;
+  opacity: 0.25;
+}
+
+/* 暗黑主题下的打字机光标 */
+.dark .typewriter-cursor {
+  background-color: var(--semi-color-text-0);
+}
+
+/* 暗黑主题下的卡片悬停效果 */
+.dark .semi-card:hover {
+  background-color: var(--semi-color-bg-2);
+}
+
+/* 暗黑主题下的按钮优化 */
+.dark .semi-button:not(.semi-button-primary):hover {
+  background-color: var(--semi-color-fill-1);
+}
+
+/* 暗黑主题下的文本颜色优化 */
+.dark .text-semi-color-text-2 {
+  color: var(--semi-color-text-2);
+}

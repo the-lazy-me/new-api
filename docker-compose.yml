@@ -7,21 +7,15 @@ services:
     restart: always
     command: --log-dir /app/logs
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"  # 仅本机访问
     volumes:
       - ./data:/data
       - ./logs:/app/logs
     environment:
-      - SQL_DSN=root:123456@tcp(mysql:3306)/new-api  # Point to the mysql service
+      - SQL_DSN=root:123456@tcp(mysql:3306)/new-api
       - REDIS_CONN_STRING=redis://redis
       - TZ=Asia/Shanghai
-      - ERROR_LOG_ENABLED=true # 是否启用错误日志记录
-    #      - STREAMING_TIMEOUT=120  # 流模式无响应超时时间，单位秒，默认120秒，如果出现空补全可以尝试改为更大值
-    #      - SESSION_SECRET=random_string  # 多机部署时设置，必须修改这个随机字符串！！！！！！！
-    #      - NODE_TYPE=slave  # Uncomment for slave node in multi-node deployment
-    #      - SYNC_FREQUENCY=60  # Uncomment if regular database syncing is needed
-    #      - FRONTEND_BASE_URL=https://openai.justsong.cn  # Uncomment for multi-node deployment with front-end URL
-
+      - ERROR_LOG_ENABLED=true
     depends_on:
       - redis
       - mysql
@@ -41,12 +35,12 @@ services:
     container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 123456  # Ensure this matches the password in SQL_DSN
+      MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: new-api
     volumes:
       - mysql_data:/var/lib/mysql
-    # ports:
-    #   - "3306:3306"  # If you want to access MySQL from outside Docker, uncomment
+    ports:
+      - "127.0.0.1:3306:3306"  # 仅本机访问
 
 volumes:
   mysql_data:

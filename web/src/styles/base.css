@@ -1,0 +1,26 @@
+/* ==================== Tailwind CSS 配置 ==================== */
+@layer tailwind-base, semi, tailwind-components, tailwind-utils;
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-components {
+  @tailwind components;
+}
+
+@layer tailwind-utils {
+  @tailwind utilities;
+}
+
+/* ==================== 全局基础样式 ==================== */
+body {
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, 'Microsoft YaHei', sans-serif;
+  color: var(--semi-color-text-0);
+  background-color: var(--semi-color-bg-0);
+}
+
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}

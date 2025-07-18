@@ -22,74 +22,50 @@ const FooterBar = () => {
   const currentYear = new Date().getFullYear();
 
   const customFooter = useMemo(() => (
-    <footer className="relative bg-semi-color-bg-2 h-auto py-16 px-6 md:px-24 w-full flex flex-col items-center justify-between overflow-hidden">
-      <div className="absolute hidden md:block top-[204px] left-[-100px] w-[151px] h-[151px] rounded-full bg-[#FFD166]"></div>
-      <div className="absolute md:hidden bottom-[20px] left-[-50px] w-[80px] h-[80px] rounded-full bg-[#FFD166] opacity-60"></div>
+    <footer className="relative bg-semi-color-bg-2 h-auto py-8 px-6 md:px-24 w-full flex flex-col items-center justify-center overflow-hidden">
 
-      {isDemoSiteMode && (
-        <div className="flex flex-col md:flex-row justify-between w-full max-w-[1110px] mb-10 gap-8">
-          <div className="flex-shrink-0">
-            <img
-              src={logo}
-              alt={systemName}
-              className="w-16 h-16 rounded-full bg-gray-800 p-1.5 object-contain"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 w-full">
-            <div className="text-left">
-              <p className="!text-semi-color-text-0 font-semibold mb-5">{t('关于我们')}</p>
-              <div className="flex flex-col gap-4">
-                <a href="https://docs.newapi.pro/wiki/project-introduction/" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">{t('关于项目')}</a>
-                <a href="https://docs.newapi.pro/support/community-interaction/" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">{t('联系我们')}</a>
-                <a href="https://docs.newapi.pro/wiki/features-introduction/" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">{t('功能特性')}</a>
-              </div>
-            </div>
-
-            <div className="text-left">
-              <p className="!text-semi-color-text-0 font-semibold mb-5">{t('文档')}</p>
-              <div className="flex flex-col gap-4">
-                <a href="https://docs.newapi.pro/getting-started/" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">{t('快速开始')}</a>
-                <a href="https://docs.newapi.pro/installation/" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">{t('安装指南')}</a>
-                <a href="https://docs.newapi.pro/api/" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">{t('API 文档')}</a>
-              </div>
-            </div>
-
-            <div className="text-left">
-              <p className="!text-semi-color-text-0 font-semibold mb-5">{t('相关项目')}</p>
-              <div className="flex flex-col gap-4">
-                <a href="https://github.com/songquanpeng/one-api" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">One API</a>
-                <a href="https://github.com/novicezk/midjourney-proxy" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">Midjourney-Proxy</a>
-                <a href="https://github.com/Deeptrain-Community/chatnio" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">chatnio</a>
-                <a href="https://github.com/Calcium-Ion/neko-api-key-tool" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">neko-api-key-tool</a>
-              </div>
-            </div>
-
-            <div className="text-left">
-              <p className="!text-semi-color-text-0 font-semibold mb-5">{t('基于New API的项目')}</p>
-              <div className="flex flex-col gap-4">
-                <a href="https://github.com/Calcium-Ion/new-api-horizon" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">new-api-horizon</a>
-                {/* <a href="https://github.com/VoAPI/VoAPI" target="_blank" rel="noopener noreferrer" className="!text-semi-color-text-1">VoAPI</a> */}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-[1110px] gap-6">
-        <div className="flex flex-wrap items-center gap-2">
-          <Typography.Text className="text-sm !text-semi-color-text-1">© {currentYear} {systemName}. {t('版权所有')}</Typography.Text>
+      <div className="flex flex-col items-center text-center w-full max-w-[800px] space-y-3">
+        {/* 版权信息 */}
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <Typography.Text className="text-sm !text-semi-color-text-0 font-medium">
+            © {currentYear} 启航 AI. All Rights Reserved.
+          </Typography.Text>
         </div>
 
-        <div className="text-sm">
-          <span className="!text-semi-color-text-1">{t('设计与开发由')} </span>
-          <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer" className="!text-semi-color-primary font-medium">New API</a>
-          <span className="!text-semi-color-text-1"> & </span>
-          <a href="https://github.com/songquanpeng/one-api" target="_blank" rel="noopener noreferrer" className="!text-semi-color-primary font-medium">One API</a>
+        {/* 免责声明 */}
+        <div className="max-w-[1000px]">
+          <Typography.Text className="text-xs !text-semi-color-text-1 leading-relaxed">
+            本站API适用于测试和体验目的，请自觉遵守您当地法律法规，切勿用于非法用途，本站不承担任何法律责任。
+          </Typography.Text>
         </div>
+
+        {/* 技术支持信息 */}
+        <div className="flex flex-wrap items-center justify-center gap-1 text-xs">
+          <span className="!text-semi-color-text-1">Powered by</span>
+          <a
+            href="https://github.com/QuantumNous/new-api"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="!text-semi-color-primary font-medium hover:underline transition-all duration-200"
+          >
+            New API
+          </a>
+          <span className="!text-semi-color-text-1">&</span>
+          <a
+            href="https://github.com/songquanpeng/one-api"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="!text-semi-color-primary font-medium hover:underline transition-all duration-200"
+          >
+            One API
+          </a>
+        </div>
+
+        {/* 分隔线 */}
+        <div className="w-full max-w-[400px] h-px bg-semi-color-border opacity-30 my-1"></div>
       </div>
     </footer>
-  ), [logo, systemName, t, currentYear, isDemoSiteMode]);
+  ), [currentYear]);
 
   useEffect(() => {
     loadFooter();

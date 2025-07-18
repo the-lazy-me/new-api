@@ -1,0 +1,302 @@
+/* ==================== 未读通知闪光效果 ==================== */
+@keyframes sweep-shine {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.shine-text {
+  background: linear-gradient(90deg, currentColor 0%, currentColor 40%, rgba(255, 255, 255, 0.9) 50%, currentColor 60%, currentColor 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sweep-shine 4s linear infinite;
+}
+
+.dark .shine-text {
+  background: linear-gradient(90deg, currentColor 0%, currentColor 40%, #facc15 50%, currentColor 60%, currentColor 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ==================== Banner 背景模糊球 ==================== */
+.blur-ball {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.blur-ball-indigo {
+  background: #6366f1;
+  /* indigo-500 */
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.5;
+}
+
+.blur-ball-teal {
+  background: #14b8a6;
+  /* teal-400 */
+  top: 200px;
+  left: 30%;
+  opacity: 0.4;
+}
+
+/* 浅色主题下让模糊球更柔和 */
+html:not(.dark) .blur-ball-indigo {
+  opacity: 0.25;
+}
+
+html:not(.dark) .blur-ball-teal {
+  opacity: 0.2;
+}
+
+/* ==================== 打字机动画样式 ==================== */
+.typewriter-text::after {
+  content: '|';
+  display: inline-block;
+  color: currentColor;
+  margin-left: 2px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* 打字机文本容器 */
+.typewriter-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.typewriter-container > div {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.typewriter-text-container {
+  width: 100%;
+  min-width: 320px;
+  max-width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+/* 为打字机文本设置固定高度和宽度，避免布局抖动 */
+.typewriter-text-container .semi-typography {
+  display: inline-block;
+  min-height: 3em;
+  line-height: 1.4;
+  width: 100%;
+  text-align: inherit;
+}
+
+@media (min-width: 640px) {
+  .typewriter-text-container {
+    min-width: 520px;
+  }
+
+  .typewriter-text-container .semi-typography {
+    min-height: 3.5em;
+  }
+}
+
+@media (min-width: 1024px) {
+  .typewriter-container {
+    justify-content: flex-start;
+  }
+
+  .typewriter-text-container {
+    min-width: 720px;
+    text-align: left;
+  }
+
+  .typewriter-text-container .semi-typography {
+    min-height: 4em;
+  }
+}
+
+/* ==================== 向下滚动按钮样式 ==================== */
+/* 持续跳动动画 */
+@keyframes continuous-bounce {
+  0%, 100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -8px);
+  }
+}
+
+.scroll-down-container {
+  animation: continuous-bounce 1.5s ease-in-out infinite;
+  will-change: transform; /* 优化动画性能 */
+}
+
+.scroll-down-button {
+  backdrop-filter: blur(5px);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  transform: none !important; /* 防止按钮自身的transform干扰动画 */
+}
+
+/* 防止hover时的闪烁，使用容器hover */
+.scroll-down-container:hover .scroll-down-button {
+  background-color: var(--semi-color-primary) !important;
+  border-color: var(--semi-color-primary) !important;
+  color: white !important;
+}
+
+.scroll-down-container:hover .scroll-down-button .semi-icon {
+  color: white !important;
+}
+
+.dark .scroll-down-button {
+  background-color: rgba(var(--semi-grey-9), 0.8);
+  border-color: var(--semi-color-border);
+}
+
+.dark .scroll-down-container:hover .scroll-down-button {
+  background-color: var(--semi-color-primary) !important;
+  border-color: var(--semi-color-primary) !important;
+}
+
+/* ==================== 步骤时间线动画 ==================== */
+/* 移除步骤图标脉冲动画 */
+
+/* 步骤卡片进入动画 */
+@keyframes step-card-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-card {
+  animation: step-card-slide-in 0.6s ease-out;
+}
+
+/* 为每个步骤添加延迟动画 */
+.step-card:nth-child(1) { animation-delay: 0.1s; }
+.step-card:nth-child(2) { animation-delay: 0.2s; }
+.step-card:nth-child(3) { animation-delay: 0.3s; }
+.step-card:nth-child(4) { animation-delay: 0.4s; }
+.step-card:nth-child(5) { animation-delay: 0.5s; }
+
+/* 连接线渐变动画 */
+@keyframes timeline-gradient {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+.timeline-line {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--semi-color-primary) 10%,
+    var(--semi-color-primary) 90%,
+    transparent 100%
+  );
+  background-size: 100% 200%;
+  animation: timeline-gradient 3s ease-in-out infinite alternate;
+}
+
+/* BaseURL 复制按钮特效 */
+.copy-button-success {
+  background-color: #10B981 !important;
+  border-color: #10B981 !important;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+/* 响应式动画优化 */
+@media (prefers-reduced-motion: reduce) {
+  .step-card,
+  .timeline-line {
+    animation: none;
+  }
+}
+
+/* ==================== 步骤时间线卡片样式 ==================== */
+/* 浅色模式 */
+.step-timeline-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+}
+
+/* 暗黑模式 */
+.dark .step-timeline-card {
+  background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+/* BaseURL 输入框样式 */
+/* 浅色模式 */
+.baseurl-input-box {
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+/* 暗黑模式 */
+.dark .baseurl-input-box {
+  background-color: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* 图标背景圆圈样式 */
+/* 浅色模式 */
+.icon-background-circle {
+  background-color: var(--semi-color-bg-0);
+}
+
+/* 暗黑模式 */
+.dark .icon-background-circle {
+  background-color: var(--semi-color-bg-0);
+}
+
+/* 移动端步骤时间线优化 */
+@media (max-width: 640px) {
+  .step-card {
+    animation-delay: 0s;
+  }
+
+  .timeline-line {
+    left: 1.5rem; /* 24px - 适应缩小的图标 */
+  }
+}
+
+/* 平板端优化 */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .timeline-line {
+    left: 2rem; /* 32px - 适应缩小的图标 */
+  }
+}

@@ -20,6 +20,11 @@ import {
   IconCreditCard,
   IconKey,
   IconBell,
+  IconHome,
+  IconApps,
+  IconCoinMoneyStroked,
+  IconFile,
+  IconHistogram,
 } from '@douyinfe/semi-icons';
 import {
   Avatar,
@@ -98,16 +103,19 @@ const HeaderBar = () => {
       text: t('首页'),
       itemKey: 'home',
       to: '/',
+      icon: <IconHome size="default" />,
     },
     {
       text: t('控制台'),
       itemKey: 'console',
       to: '/console',
+      icon: <IconApps size="default" />,
     },
     {
-      text: t('定价'),
+      text: t('模型列表｜定价'),
       itemKey: 'pricing',
       to: '/pricing',
+      icon: <IconCoinMoneyStroked size="default" />,
     },
     ...(docsLink
       ? [
@@ -116,13 +124,15 @@ const HeaderBar = () => {
           itemKey: 'docs',
           isExternal: true,
           externalLink: docsLink,
+          icon: <IconFile size="default" />,
         },
       ]
       : []),
     {
-      text: t('关于'),
+      text: t('更新日志'),
       itemKey: 'about',
       to: '/about',
+      icon: <IconHistogram size="default" />,
     },
   ];
 
@@ -228,11 +238,18 @@ const HeaderBar = () => {
 
     return mainNavLinks.map((link) => {
       const commonLinkClasses = isMobileView
-        ? 'flex items-center gap-1 p-3 w-full text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors font-semibold'
-        : 'flex items-center gap-1 p-2 text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-md font-semibold';
+        ? 'flex items-center gap-2 p-4 w-full text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-semibold text-base'
+        : 'flex items-center gap-2 px-3 py-2.5 text-base text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg font-semibold';
 
       const linkContent = (
-        <span>{link.text}</span>
+        <div className="flex items-center justify-center gap-2 h-full">
+          {link.icon && (
+            <span className="text-current opacity-80 flex-shrink-0 flex items-center">
+              {link.icon}
+            </span>
+          )}
+          <span className="font-medium flex items-center">{link.text}</span>
+        </div>
       );
 
       if (link.isExternal) {
@@ -334,36 +351,36 @@ const HeaderBar = () => {
           <Button
             theme="borderless"
             type="tertiary"
-            className="flex items-center gap-1.5 !p-1 !rounded-full hover:!bg-semi-color-fill-1 dark:hover:!bg-gray-700 !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2"
+            className="flex items-center gap-2 !p-2 !rounded-full hover:!bg-semi-color-fill-1 dark:hover:!bg-gray-700 !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2"
           >
             <Avatar
-              size="extra-small"
+              size="small"
               color={stringToColor(userState.user.username)}
-              className="mr-1"
+              className="flex-shrink-0"
             >
               {userState.user.username[0].toUpperCase()}
             </Avatar>
             <span className="hidden md:inline">
-              <Typography.Text className="!text-xs !font-medium !text-semi-color-text-1 dark:!text-gray-300 mr-1">
+              <Typography.Text className="!text-sm !font-medium !text-semi-color-text-1 dark:!text-gray-300">
                 {userState.user.username}
               </Typography.Text>
             </span>
-            <IconChevronDown className="text-xs text-semi-color-text-2 dark:text-gray-400" />
+            <IconChevronDown size="small" className="text-semi-color-text-2 dark:text-gray-400 flex-shrink-0" />
           </Button>
         </Dropdown>
       );
     } else {
       const showRegisterButton = !isSelfUseMode;
 
-      const commonSizingAndLayoutClass = "flex items-center justify-center !py-[10px] !px-1.5";
+      const commonSizingAndLayoutClass = "flex items-center justify-center !py-3 !px-4";
 
       const loginButtonSpecificStyling = "!bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-gray-700 transition-colors";
       let loginButtonClasses = `${commonSizingAndLayoutClass} ${loginButtonSpecificStyling}`;
 
       let registerButtonClasses = `${commonSizingAndLayoutClass}`;
 
-      const loginButtonTextSpanClass = "!text-xs !text-semi-color-text-1 dark:!text-gray-300 !p-1.5";
-      const registerButtonTextSpanClass = "!text-xs !text-white !p-1.5";
+      const loginButtonTextSpanClass = "!text-sm !text-semi-color-text-1 dark:!text-gray-300 !font-medium";
+      const registerButtonTextSpanClass = "!text-sm !text-white !font-medium";
 
       if (showRegisterButton) {
         if (styleState.isMobile) {
@@ -418,15 +435,15 @@ const HeaderBar = () => {
         defaultTab={unreadCount > 0 ? 'system' : 'inApp'}
         unreadKeys={getUnreadKeys()}
       />
-      <div className="w-full px-2">
-        <div className="flex items-center justify-between h-16">
+      <div className="w-full px-5">
+        <div className="flex items-center justify-between h-20">
           <div className="flex items-center">
             <div className="md:hidden">
               <Button
                 icon={
                   isConsoleRoute
-                    ? (styleState.showSider ? <IconClose className="text-lg" /> : <IconMenu className="text-lg" />)
-                    : (mobileMenuOpen ? <IconClose className="text-lg" /> : <IconMenu className="text-lg" />)
+                    ? (styleState.showSider ? <IconClose size="default" /> : <IconMenu size="default" />)
+                    : (mobileMenuOpen ? <IconClose size="default" /> : <IconMenu size="default" />)
                 }
                 aria-label={
                   isConsoleRoute
@@ -444,7 +461,7 @@ const HeaderBar = () => {
                 }}
                 theme="borderless"
                 type="tertiary"
-                className="!p-2 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700"
+                className="!p-2.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700"
               />
             </div>
             <Link to="/" onClick={() => handleNavLinkClick('home')} className="flex items-center gap-2 group ml-2">
@@ -490,12 +507,12 @@ const HeaderBar = () => {
               </div>
             )}
 
-            <nav className="hidden md:flex items-center gap-1 lg:gap-2 ml-6">
+            <nav className="hidden md:flex items-center gap-2 lg:gap-4 ml-8">
               {renderNavLinks(false, isLoading)}
             </nav>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-3 md:gap-4">
             {isNewYear && (
               <Dropdown
                 position="bottomRight"
@@ -512,7 +529,7 @@ const HeaderBar = () => {
                   type="tertiary"
                   icon={<span className="text-xl">🎉</span>}
                   aria-label="New Year"
-                  className="!p-1.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700 rounded-full"
+                  className="!p-2.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700 rounded-full"
                 />
               </Dropdown>
             )}
@@ -520,22 +537,22 @@ const HeaderBar = () => {
             {unreadCount > 0 ? (
               <Badge count={unreadCount} type="danger" overflowCount={99}>
                 <Button
-                  icon={<IconBell className="text-lg" />}
+                  icon={<IconBell size="default" />}
                   aria-label={t('系统公告')}
                   onClick={handleNoticeOpen}
                   theme="borderless"
                   type="tertiary"
-                  className="!p-1.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700 !rounded-full !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2"
+                  className="!p-2.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700 !rounded-full !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2"
                 />
               </Badge>
             ) : (
               <Button
-                icon={<IconBell className="text-lg" />}
+                icon={<IconBell size="default" />}
                 aria-label={t('系统公告')}
                 onClick={handleNoticeOpen}
                 theme="borderless"
                 type="tertiary"
-                className="!p-1.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700 !rounded-full !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2"
+                className="!p-2.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700 !rounded-full !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2"
               />
             )}
 
@@ -545,7 +562,7 @@ const HeaderBar = () => {
               onClick={() => setTheme(theme === 'dark' ? false : true)}
               theme="borderless"
               type="tertiary"
-              className="!p-1.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700 !rounded-full !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2"
+              className="!p-2.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700 !rounded-full !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2"
             />
 
             <Dropdown
@@ -570,11 +587,11 @@ const HeaderBar = () => {
               }
             >
               <Button
-                icon={<IconLanguage className="text-lg" />}
+                icon={<IconLanguage size="default" />}
                 aria-label={t('切换语言')}
                 theme="borderless"
                 type="tertiary"
-                className="!p-1.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700 !rounded-full !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2"
+                className="!p-2.5 !text-current focus:!bg-semi-color-fill-1 dark:focus:!bg-gray-700 !rounded-full !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2"
               />
             </Dropdown>
 
@@ -586,8 +603,8 @@ const HeaderBar = () => {
       <div className="md:hidden">
         <div
           className={`
-            absolute top-16 left-0 right-0 bg-semi-color-bg-0 
-            shadow-lg p-3
+            absolute top-20 left-0 right-0 bg-semi-color-bg-0
+            shadow-lg p-4
             transform transition-all duration-300 ease-in-out
             ${(!isConsoleRoute && mobileMenuOpen) ? 'translate-y-0 opacity-100 visible' : '-translate-y-4 opacity-0 invisible'}
           `}
