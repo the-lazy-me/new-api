@@ -219,18 +219,18 @@ const Home = () => {
   const ModelsSection = () => {
     const models = [
       { name: 'OpenAI', icon: <OpenAI size={32} />, url: 'https://openai.com' },
-      { name: 'Claude', icon: <Claude.Color size={32} />, url: 'https://openai.com' },
-      { name: 'Gemini', icon: <Gemini.Color size={32} />, url: 'https://openai.com' },
-      { name: 'DeepSeek', icon: <DeepSeek.Color size={32} />, url: 'https://openai.com' },
-      { name: 'Qwen', icon: <Qwen.Color size={32} />, url: 'https://openai.com' },
-      { name: 'XAI', icon: <XAI size={32} />, url: 'https://openai.com' },
-      { name: 'Zhipu', icon: <Zhipu.Color size={32} />, url: 'https://openai.com' },
-      { name: 'Wenxin', icon: <Wenxin.Color size={32} />, url: 'https://openai.com' },
-      { name: 'Qingyan', icon: <Qingyan.Color size={32} />, url: 'https://openai.com' },
-      { name: '语音识别', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="ASR" className="w-8 h-8" />, url: 'https://openai.com' },
-      { name: '文本转语音', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="TTS" className="w-8 h-8" />, url: 'https://openai.com' },
-      { name: '启航绘图 V1', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="绘图V1" className="w-8 h-8" />, url: 'https://openai.com' },
-      { name: '启航绘图 V2', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="绘图V2" className="w-8 h-8" />, url: 'https://openai.com' }
+      { name: 'Claude', icon: <Claude.Color size={32} />, url: 'https://claude.ai' },
+      { name: 'Gemini', icon: <Gemini.Color size={32} />, url: 'https://gemini.google.com' },
+      { name: 'DeepSeek', icon: <DeepSeek.Color size={32} />, url: 'https://deepseek.com' },
+      { name: 'Qwen', icon: <Qwen.Color size={32} />, url: 'https://qwenlm.github.io' },
+      { name: 'XAI', icon: <XAI size={32} />, url: 'https://x.ai' },
+      { name: 'Zhipu', icon: <Zhipu.Color size={32} />, url: 'https://www.zhipuai.cn' },
+      { name: 'Wenxin', icon: <Wenxin.Color size={32} />, url: 'https://wenxin.baidu.com' },
+      { name: 'Qingyan', icon: <Qingyan.Color size={32} />, url: 'https://qingyan.zte.com.cn' }
+      { name: '语音识别', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="ASR" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
+      { name: '文本转语音', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="TTS" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
+      { name: '启航绘图 V1', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="绘图V1" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
+      { name: '启航绘图 V2', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="绘图V2" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' }
     ];
 
     return (
@@ -275,13 +275,13 @@ const Home = () => {
   // 应用适配区域组件
   const ApplicationsSection = () => {
     const applications = [
-      { name: 'NextWeb', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="NextWeb" className="w-8 h-8" />, url: 'https://openai.com' },
-      { name: 'ChatBox', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="ChatBox" className="w-8 h-8" />, url: 'https://openai.com' },
-      { name: 'CherryStudio', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="CherryStudio" className="w-8 h-8" />, url: 'https://openai.com' },
-      { name: 'LobeChat', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="LobeChat" className="w-8 h-8" />, url: 'https://openai.com' },
-      { name: '沉浸式翻译', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="沉浸式翻译" className="w-8 h-8" />, url: 'https://openai.com' },
-      { name: 'LangBot', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="LangBot" className="w-8 h-8" />, url: 'https://openai.com' },
-      { name: 'GoAmzAI', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="GoAmzAI" className="w-8 h-8" />, url: 'https://openai.com' }
+      { name: 'LangBot', icon: <img src="![](https://img.thelazy.top/2025/07/19/langbot-logo-20250719015647029.png)" alt="LangBot" className="w-8 h-8" />, url: 'https://github.com/langbot-app/LangBot' },
+      { name: 'NextWeb', icon: <img src="https://img.thelazy.top/2025/07/19/153288546.png" alt="NextWeb" className="w-8 h-8" />, url: 'https://github.com/ChatGPTNextWeb/NextChat' },
+      { name: 'ChatBox', icon: <img src="https://img.thelazy.top/2025/07/19/icon.png" alt="ChatBox" className="w-8 h-8" />, url: 'https://github.com/chatboxai/chatbox' },
+      { name: 'CherryStudio', icon: <img src="https://img.thelazy.top/2025/07/19/187777663.png" alt="CherryStudio" className="w-8 h-8" />, url: 'https://github.com/CherryHQ/cherry-studio' },
+      { name: 'LobeChat', icon: <img src="https://img.thelazy.top/2025/07/19/logo-3d.webp" alt="LobeChat" className="w-8 h-8" />, url: 'https://github.com/lobehub/lobe-chat' },
+      { name: 'GoAmzAI', icon: <img src="https://img.thelazy.top/2025/07/19/logo-20250719015706437.png" alt="GoAmzAI" className="w-8 h-8" />, url: 'https://d.goamzai.com' },
+      { name: '沉浸式翻译', icon: <img src="https://img.thelazy.top/2025/07/19/logo.png" alt="沉浸式翻译" className="w-8 h-8" />, url: 'https://immersivetranslate.com' }
     ];
 
     return (
