@@ -1,0 +1,106 @@
+name: Build and Push Production Docker Image
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manual trigger"
+        required: false
+        default: "Manual build"
+
+jobs:
+  build-and-push:
+    name: Build and Push Production Docker Image
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up version info
+        id: version
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "DOCKER_TAG=$VERSION" >> $GITHUB_OUTPUT
+            echo "IS_RELEASE=true" >> $GITHUB_OUTPUT
+          else
+            VERSION="main-$(date +'%Y%m%d')-$(git rev-parse --short HEAD)"
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "DOCKER_TAG=latest" >> $GITHUB_OUTPUT
+            echo "IS_RELEASE=false" >> $GITHUB_OUTPUT
+          fi
+          echo "$VERSION" > VERSION
+          echo "Generated version: $VERSION"
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: thelazy/new-api
+          tags: |
+            type=raw,value=${{ steps.version.outputs.DOCKER_TAG }}
+            type=raw,value=${{ steps.version.outputs.VERSION }}
+            type=sha,prefix={{branch}}-,suffix=-{{date 'YYYYMMDD'}}
+          labels: |
+            org.opencontainers.image.title=New API
+            org.opencontainers.image.description=OpenAI API proxy and management tool
+            org.opencontainers.image.version=${{ steps.version.outputs.VERSION }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created={{date 'RFC3339'}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VERSION=${{ steps.version.outputs.VERSION }}
+
+      - name: Generate summary
+        run: |
+          echo "## 🚀 Docker Image Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Repository:** thelazy/new-api" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ steps.version.outputs.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Platform:** linux/amd64" >> $GITHUB_STEP_SUMMARY
+          echo "**Tags:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ steps.version.outputs.IS_RELEASE }}" == "true" ]]; then
+            echo "🎉 **This is a release build!**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "🔧 **This is a development build**" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Pull command:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull thelazy/new-api:${{ steps.version.outputs.DOCKER_TAG }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
