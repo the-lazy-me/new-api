@@ -226,7 +226,7 @@ const Home = () => {
       { name: 'XAI', icon: <XAI size={32} />, url: 'https://x.ai' },
       { name: 'Zhipu', icon: <Zhipu.Color size={32} />, url: 'https://www.zhipuai.cn' },
       { name: 'Wenxin', icon: <Wenxin.Color size={32} />, url: 'https://wenxin.baidu.com' },
-      { name: 'Qingyan', icon: <Qingyan.Color size={32} />, url: 'https://qingyan.zte.com.cn' }
+      { name: 'Qingyan', icon: <Qingyan.Color size={32} />, url: 'https://qingyan.zte.com.cn' },
       { name: '语音识别', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="ASR" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
       { name: '文本转语音', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="TTS" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
       { name: '启航绘图 V1', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="绘图V1" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
