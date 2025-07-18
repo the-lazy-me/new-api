@@ -12,4 +12,3 @@ one-api
 .DS_Store
 tiktoken_cache
 web/bun.lockb
-web/bun.lockb
