@@ -42,8 +42,9 @@ const EditToken = (props) => {
   const [groups, setGroups] = useState([]);
   const isEdit = props.editingToken.id !== undefined;
 
+
   const getInitValues = () => ({
-    name: '',
+    name: t('创建于：')+ timestamp2string(Date.now() / 1000).split(' ')[0],
     remain_quota: 500000,
     expired_time: -1,
     unlimited_quota: true,
