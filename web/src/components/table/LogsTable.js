@@ -190,6 +190,7 @@ const LogsTable = () => {
       other?.is_model_mapped &&
       other?.upstream_model_name &&
       other?.upstream_model_name !== '';
+
     if (!modelMapped) {
       return renderModelTag(record.model_name, {
         onClick: (event) => {
@@ -197,53 +198,63 @@ const LogsTable = () => {
         },
       });
     } else {
-      return (
-        <>
-          <Space vertical align={'start'}>
-            <Popover
-              content={
-                <div style={{ padding: 10 }}>
-                  <Space vertical align={'start'}>
-                    <div className='flex items-center'>
-                      <Text strong style={{ marginRight: 8 }}>
-                        {t('请求并计费模型')}:
-                      </Text>
-                      {renderModelTag(record.model_name, {
-                        onClick: (event) => {
-                          copyText(event, record.model_name).then((r) => { });
-                        },
-                      })}
-                    </div>
-                    <div className='flex items-center'>
-                      <Text strong style={{ marginRight: 8 }}>
-                        {t('实际模型')}:
-                      </Text>
-                      {renderModelTag(other.upstream_model_name, {
-                        onClick: (event) => {
-                          copyText(event, other.upstream_model_name).then(
-                            (r) => { },
-                          );
-                        },
-                      })}
-                    </div>
-                  </Space>
-                </div>
-              }
-            >
-              {renderModelTag(record.model_name, {
-                onClick: (event) => {
-                  copyText(event, record.model_name).then((r) => { });
-                },
-                suffixIcon: (
-                  <Route
-                    style={{ width: '0.9em', height: '0.9em', opacity: 0.75 }}
-                  />
-                ),
-              })}
-            </Popover>
-          </Space>
-        </>
-      );
+      // 如果是管理员，显示详细信息（原有逻辑）
+      if (isAdminUser) {
+        return (
+          <>
+            <Space vertical align={'start'}>
+              <Popover
+                content={
+                  <div style={{ padding: 10 }}>
+                    <Space vertical align={'start'}>
+                      <div className='flex items-center'>
+                        <Text strong style={{ marginRight: 8 }}>
+                          {t('请求并计费模型')}:
+                        </Text>
+                        {renderModelTag(record.model_name, {
+                          onClick: (event) => {
+                            copyText(event, record.model_name).then((r) => { });
+                          },
+                        })}
+                      </div>
+                      <div className='flex items-center'>
+                        <Text strong style={{ marginRight: 8 }}>
+                          {t('实际模型')}:
+                        </Text>
+                        {renderModelTag(other.upstream_model_name, {
+                          onClick: (event) => {
+                            copyText(event, other.upstream_model_name).then(
+                              (r) => { },
+                            );
+                          },
+                        })}
+                      </div>
+                    </Space>
+                  </div>
+                }
+              >
+                {renderModelTag(record.model_name, {
+                  onClick: (event) => {
+                    copyText(event, record.model_name).then((r) => { });
+                  },
+                  suffixIcon: (
+                    <Route
+                      style={{ width: '0.9em', height: '0.9em', opacity: 0.75 }}
+                    />
+                  ),
+                })}
+              </Popover>
+            </Space>
+          </>
+        );
+      } else {
+        // 如果不是管理员，只显示实际计费模型（即请求的模型名称）
+        return renderModelTag(record.model_name, {
+          onClick: (event) => {
+            copyText(event, record.model_name).then((r) => { });
+          },
+        });
+      }
     }
   }
 
@@ -1011,7 +1022,8 @@ const LogsTable = () => {
           other?.is_model_mapped &&
           other?.upstream_model_name &&
           other?.upstream_model_name !== '';
-        if (modelMapped) {
+        // 只有管理员才显示模型重映射的详细信息
+        if (modelMapped && isAdminUser) {
           expandDataLocal.push({
             key: t('请求并计费模型'),
             value: logs[i].model_name,
