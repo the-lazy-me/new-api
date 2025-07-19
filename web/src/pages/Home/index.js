@@ -4,7 +4,7 @@ import { API, showError, isMobile, showSuccess, getServerAddress, getLogo, getSy
 import { StatusContext } from '../../context/Status';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/Theme';
-import { IconPlay, IconFile, IconChevronRight, IconUserGroup, IconPhone, IconLink, IconChevronDown, IconBolt, IconCoinMoneyStroked, IconComponent, IconShield, IconApps, IconCustomerSupport, IconUser, IconCreditCard, IconList, IconSetting, IconTick, IconMail, IconGithubLogo, IconComment, IconHelpCircle } from '@douyinfe/semi-icons';
+import { IconPlay, IconFile, IconChevronRight, IconUserGroup, IconPhone, IconChevronDown, IconBolt, IconCoinMoneyStroked, IconComponent, IconShield, IconApps, IconCustomerSupport, IconUser, IconCreditCard, IconList, IconSetting, IconTick, IconMail, IconGithubLogo, IconComment, IconHelpCircle, IconCopy } from '@douyinfe/semi-icons';
 import { Link } from 'react-router-dom';
 import NoticeModal from '../../components/layout/NoticeModal';
 import { OpenAI, Claude, Gemini, DeepSeek, Qwen, XAI, Zhipu, Wenxin, Qingyan } from '@lobehub/icons';
@@ -585,7 +585,7 @@ const Home = () => {
                                 </Text>
                                 <Button
                                   size="small"
-                                  icon={<IconLink />}
+                                  icon={<IconCopy />}
                                   onClick={(e) => copyToClipboard(stepItem.baseUrl, e.target.closest('button'))}
                                   className="!rounded-full !px-2 !py-1 !text-xs hover:!scale-105 transition-transform duration-200"
                                 >
@@ -599,7 +599,7 @@ const Home = () => {
                                 </Text>
                                 <Button
                                   size="small"
-                                  icon={<IconLink />}
+                                  icon={<IconCopy />}
                                   onClick={(e) => copyToClipboard(`${stepItem.baseUrl}/v1`, e.target.closest('button'))}
                                   className="!rounded-full !px-2 !py-1 !text-xs hover:!scale-105 transition-transform duration-200"
                                 >
@@ -725,7 +725,7 @@ const Home = () => {
                       <Text className="text-base sm:text-lg font-bold text-semi-color-primary font-mono group-hover/copy:text-semi-color-primary-hover transition-colors duration-200">
                         {contactInfo.groupNumber}
                       </Text>
-                      <IconLink
+                      <IconCopy
                         size="small"
                         className="text-semi-color-text-2 group-hover/copy:text-semi-color-primary transition-colors duration-200"
                       />
