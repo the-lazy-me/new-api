@@ -27,12 +27,12 @@ services:
 
   redis:
     image: redis:latest
-    container_name: new-api-redis
+    container_name: redis
     restart: always
 
   mysql:
     image: mysql:8.2
-    container_name: new-api-mysql
+    container_name: mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 123456
