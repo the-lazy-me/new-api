@@ -76,7 +76,6 @@ const TopUp = () => {
 
   // 预设充值额度选项
   const [presetAmounts, setPresetAmounts] = useState([
-    { value: 5 },
     { value: 10 },
     { value: 30 },
     { value: 50 },
@@ -84,6 +83,7 @@ const TopUp = () => {
     { value: 300 },
     { value: 500 },
     { value: 1000 },
+    { value: 5000 },
   ]);
   const [selectedPreset, setSelectedPreset] = useState(null);
 
