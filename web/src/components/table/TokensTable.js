@@ -615,11 +615,12 @@ const TokensTable = () => {
 
       {/* BaseURL 显示区域 */}
       <div className="mb-3 p-3 bg-semi-color-bg-2 rounded-lg border border-semi-color-border">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Text className="text-sm text-semi-color-text-2">BaseURL:</Text>
+        <div className="flex flex-col xl:flex-row xl:items-center gap-3">
+          {/* 不带 /v1 的 BaseURL */}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <Text className="text-sm text-semi-color-text-2 flex-shrink-0">BaseURL:</Text>
             <Text
-              className="font-mono text-sm text-semi-color-text-0 cursor-pointer hover:text-semi-color-primary transition-colors duration-200 select-all"
+              className="font-mono text-sm text-semi-color-text-0 cursor-pointer hover:text-semi-color-primary transition-colors duration-200 select-all truncate"
               onClick={async () => {
                 const serverAddress = getServerAddress();
                 if (await copy(serverAddress)) {
@@ -636,27 +637,70 @@ const TokensTable = () => {
             >
               {getServerAddress()}
             </Text>
+            <Button
+              size="small"
+              theme="borderless"
+              type="tertiary"
+              icon={<IconCopy />}
+              onClick={async () => {
+                const serverAddress = getServerAddress();
+                if (await copy(serverAddress)) {
+                  showSuccess(t('BaseURL已复制到剪贴板！'));
+                } else {
+                  Modal.error({
+                    title: t('无法复制到剪贴板，请手动复制'),
+                    content: serverAddress,
+                    size: 'large',
+                  });
+                }
+              }}
+              className="!p-1 hover:!bg-semi-color-bg-3 transition-colors duration-200 flex-shrink-0"
+              title={t('复制BaseURL')}
+            />
           </div>
-          <Button
-            size="small"
-            theme="borderless"
-            type="tertiary"
-            icon={<IconCopy />}
-            onClick={async () => {
-              const serverAddress = getServerAddress();
-              if (await copy(serverAddress)) {
-                showSuccess(t('BaseURL已复制到剪贴板！'));
-              } else {
-                Modal.error({
-                  title: t('无法复制到剪贴板，请手动复制'),
-                  content: serverAddress,
-                  size: 'large',
-                });
-              }
-            }}
-            className="!p-1 hover:!bg-semi-color-bg-3 transition-colors duration-200"
-            title={t('复制BaseURL')}
-          />
+
+          {/* 带 /v1 的 BaseURL */}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <Text className="text-sm text-semi-color-text-2 flex-shrink-0">或</Text>
+            <Text
+              className="font-mono text-sm text-semi-color-text-0 cursor-pointer hover:text-semi-color-primary transition-colors duration-200 select-all truncate"
+              onClick={async () => {
+                const serverAddress = getServerAddress() + '/v1';
+                if (await copy(serverAddress)) {
+                  showSuccess(t('BaseURL (v1)已复制到剪贴板！'));
+                } else {
+                  Modal.error({
+                    title: t('无法复制到剪贴板，请手动复制'),
+                    content: serverAddress,
+                    size: 'large',
+                  });
+                }
+              }}
+              title={t('点击复制BaseURL (v1)')}
+            >
+              {getServerAddress()}/v1
+            </Text>
+            <Button
+              size="small"
+              theme="borderless"
+              type="tertiary"
+              icon={<IconCopy />}
+              onClick={async () => {
+                const serverAddress = getServerAddress() + '/v1';
+                if (await copy(serverAddress)) {
+                  showSuccess(t('BaseURL (v1)已复制到剪贴板！'));
+                } else {
+                  Modal.error({
+                    title: t('无法复制到剪贴板，请手动复制'),
+                    content: serverAddress,
+                    size: 'large',
+                  });
+                }
+              }}
+              className="!p-1 hover:!bg-semi-color-bg-3 transition-colors duration-200 flex-shrink-0"
+              title={t('复制BaseURL (v1)')}
+            />
+          </div>
         </div>
       </div>
 
