@@ -47,7 +47,7 @@ const EditToken = (props) => {
     remain_quota: 500000,
     expired_time: -1,
     unlimited_quota: false,
-    model_limits_enabled: false,
+    model_limits_enabled: true,
     model_limits: [],
     allow_ips: '',
     group: '',
