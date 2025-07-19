@@ -15,6 +15,7 @@ const { Text } = Typography;
 const useTypewriter = (texts, speed = 100, delay = 2000) => {
   const textRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     if (!texts || texts.length === 0 || !textRef.current) return;
@@ -28,15 +29,12 @@ const useTypewriter = (texts, speed = 100, delay = 2000) => {
       if (!textRef.current) return;
 
       const currentText = texts[currentTextIndex];
-
       if (!isDeleting) {
-        // 正在打字
         if (currentCharIndex < currentText.length) {
           textRef.current.textContent = currentText.slice(0, currentCharIndex + 1);
           currentCharIndex++;
           timeoutId = setTimeout(updateText, speed);
         } else {
-          // 当前文本打完，等待一段时间后开始删除
           textRef.current.textContent = currentText;
           timeoutId = setTimeout(() => {
             isDeleting = true;
@@ -44,13 +42,11 @@ const useTypewriter = (texts, speed = 100, delay = 2000) => {
           }, delay);
         }
       } else {
-        // 正在删除
         if (currentCharIndex > 0) {
           currentCharIndex--;
           textRef.current.textContent = currentText.slice(0, currentCharIndex);
           timeoutId = setTimeout(updateText, speed / 2);
         } else {
-          // 删除完毕，切换到下一个文本
           isDeleting = false;
           currentTextIndex = (currentTextIndex + 1) % texts.length;
           textRef.current.textContent = '';
@@ -59,16 +55,13 @@ const useTypewriter = (texts, speed = 100, delay = 2000) => {
       }
     };
 
-    // 开始动画
     updateText();
     setIsInitialized(true);
 
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
+      if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [texts, speed, delay]);
+  }, [texts, speed, delay, i18n.language]);
 
   return { textRef, isInitialized };
 };
@@ -84,11 +77,12 @@ const Home = () => {
   const docsLink = statusState?.status?.docs_link || '';
   const isChinese = i18n.language.startsWith('zh');
 
-  // 打字机动画文本
+  // 打字机动画文本（国际化）
   const typewriterTexts = [
-    '2025，大模型之年，启航AI，您的不二之选',
-    '我们致力于提供聚合大模型API，为用户提供稳定、好用的解决方案。'
+    t('2025，大模型之年，启航AI，您的不二之选'),
+    t('我们致力于提供聚合大模型API，为用户提供稳定、好用的解决方案。')
   ];
+
   const { textRef, isInitialized } = useTypewriter(typewriterTexts, 80, 3000);
 
   const displayHomePageContent = async () => {
@@ -121,7 +115,6 @@ const Home = () => {
         }
       }
     };
-
     checkNoticeAndShow();
   }, []);
 
@@ -135,18 +128,15 @@ const Home = () => {
       {/* 背景模糊球 */}
       <div className="blur-ball blur-ball-indigo" />
       <div className="blur-ball blur-ball-teal" />
-
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center translate-y-[-5%]">
         {/* 左侧内容 */}
         <div className="text-center lg:text-left order-2 lg:order-1">
-          <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-8xl font-semibold mb-6 sm:mb-8 leading-relaxed " style={{ color: '#0059F9' }}>
-            启航 AI
+          <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-8xl font-semibold mb-6 sm:mb-8 leading-relaxed" style={{ color: '#0059F9' }}>
+            {t('启航 AI')}
           </h1>
-
           <h2 className="text-lg sm:text-lg md:text-xl lg:text-2xl font-normal mb-6 sm:mb-8 text-semi-color-text-1 leading-relaxed">
-            助你低成本探索AIGC的无限可能
+            {t('助你低成本探索AIGC的无限可能')}
           </h2>
-
           {/* 打字机动画文本 */}
           <div className="mb-2 sm:mb-4 w-full">
             <div className="min-h-[4rem] sm:min-h-[4.5rem] lg:min-h-[5rem] flex items-center justify-center lg:justify-start w-full">
@@ -157,7 +147,6 @@ const Home = () => {
               </div>
             </div>
           </div>
-
           {/* CTA按钮组 */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
             <Link to="/console">
@@ -171,7 +160,7 @@ const Home = () => {
                   color: 'white'
                 }}
               >
-                立即开始
+                {t('立即开始')}
               </Button>
             </Link>
             {docsLink && (
@@ -181,22 +170,20 @@ const Home = () => {
                 className="!rounded-full !px-6 sm:!px-8 !py-2 sm:!py-3 !text-base sm:!text-lg !font-medium w-full sm:w-auto"
                 onClick={() => window.open(docsLink, '_blank')}
               >
-                查看文档
+                {t('查看文档')}
               </Button>
             )}
           </div>
         </div>
-
         {/* 右侧Logo */}
         <div className="flex justify-center lg:justify-end order-1 lg:order-2">
           <img
-            src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png"
-            alt="启航AI Logo"
+            src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png "
+            alt={t('启航AI Logo')}
             className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 xl:w-[28rem] xl:h-[28rem] object-contain"
           />
         </div>
       </div>
-
       {/* 向下滚动按钮 */}
       <div className="absolute bottom-8 left-1/2 scroll-down-container">
         <Button
@@ -218,32 +205,30 @@ const Home = () => {
   // 模型适配区域组件
   const ModelsSection = () => {
     const models = [
-      { name: 'OpenAI', icon: <OpenAI size={32} />, url: 'https://openai.com' },
-      { name: 'Claude', icon: <Claude.Color size={32} />, url: 'https://claude.ai' },
-      { name: 'Gemini', icon: <Gemini.Color size={32} />, url: 'https://gemini.google.com' },
-      { name: 'DeepSeek', icon: <DeepSeek.Color size={32} />, url: 'https://deepseek.com' },
-      { name: 'Qwen', icon: <Qwen.Color size={32} />, url: 'https://qwenlm.github.io' },
-      { name: 'XAI', icon: <XAI size={32} />, url: 'https://x.ai' },
-      { name: '智谱清言', icon: <Zhipu.Color size={32} />, url: 'https://www.zhipuai.cn' },
-      { name: '通义千问', icon: <Qwen.Color size={32} />, url: 'https://www.aliyun.com/product/bailian' },
-      { name: '语音识别', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="ASR" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
-      { name: '文本转语音', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="TTS" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
-      { name: '启航绘图 V1', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="绘图V1" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
-      { name: '启航绘图 V2', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="绘图V2" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' }
+      { name: 'OpenAI', icon: <OpenAI size={32} />, url: 'https://openai.com ' },
+      { name: t('Claude'), icon: <Claude.Color size={32} />, url: 'https://claude.ai ' },
+      { name: t('Gemini'), icon: <Gemini.Color size={32} />, url: 'https://gemini.google.com ' },
+      { name: t('DeepSeek'), icon: <DeepSeek.Color size={32} />, url: 'https://deepseek.com ' },
+      { name: t('通义千问'), icon: <Qwen.Color size={32} />, url: 'https://qwenlm.github.io ' },
+      { name: t('XAI'), icon: <XAI size={32} />, url: 'https://x.ai ' },
+      { name: t('智谱清言'), icon: <Zhipu.Color size={32} />, url: 'https://www.zhipuai.cn ' },
+      { name: t('文心一言'), icon: <Wenxin.Color size={32} />, url: 'https://wenxin.baidu.com ' },
+      { name: t('语音转文本'), icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png " alt="ASR" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' },
+      { name: t('文本转语音'), icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png " alt="TTS" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' },
+      { name: t('启航绘图 V1'), icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png " alt="启航绘图V1" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' },
+      { name: t('启航绘图 V2'), icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png " alt="启航绘图V2" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' }
     ];
-
     return (
       <section id="models-section" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-semi-color-bg-1 border-t border-semi-color-border">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-semi-color-text-0">
-              适配众多 AI 大模型
+              {t('适配众多 AI 大模型')}
             </h2>
             <Text className="sm:text-xl text-semi-color-text-1 max-w-4xl mx-auto !text-semi-color-text-2">
-              覆盖全网各种主流模型，同时提供 ASR（语音识别）、TTS（文本转语音）、绘图等启航特供模型，覆盖 90%+ 的场景
+              {t('覆盖全网各种主流模型，同时提供 ASR（语音识别）、TTS（文本转语音）、绘图等启航特供模型，覆盖 90%+ 的场景')}
             </Text>
           </div>
-
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {models.map((model, index) => (
               <Card
@@ -258,7 +243,7 @@ const Home = () => {
                       {model.icon}
                     </div>
                     <Text className="font-medium text-semi-color-text-0 group-hover:text-semi-color-primary text-sm sm:text-base truncate">
-                      {model.name}
+                      {t(model.name)}
                     </Text>
                   </div>
                   <IconChevronRight className="text-semi-color-text-2 group-hover:text-semi-color-primary transition-colors flex-shrink-0 ml-2" size="large" />
@@ -274,26 +259,54 @@ const Home = () => {
   // 应用适配区域组件
   const ApplicationsSection = () => {
     const applications = [
-      { name: 'LangBot', icon: <img src="https://img.thelazy.top/2025/07/19/langbot-logo-20250719015647029.png" alt="LangBot" className="w-8 h-8 rounded-md" />, url: 'https://github.com/langbot-app/LangBot', description: '简单易用的大模型即时通信机器人开发平台' },
-      { name: 'NextWeb', icon: <img src="https://img.thelazy.top/2025/07/19/153288546.png" alt="NextWeb" className="w-8 h-8 rounded-md" />, url: 'https://github.com/ChatGPTNextWeb/NextChat', description: '简单易用的大模型即时通信机器人开发平台' },
-      { name: 'ChatBox', icon: <img src="https://img.thelazy.top/2025/07/19/icon.png" alt="ChatBox" className="w-8 h-8 rounded-md" />, url: 'https://github.com/chatboxai/chatbox', description: '简单易用的大模型即时通信机器人开发平台' },
-      { name: 'CherryStudio', icon: <img src="https://img.thelazy.top/2025/07/19/187777663.png" alt="CherryStudio" className="w-8 h-8 rounded-md" />, url: 'https://github.com/CherryHQ/cherry-studio', description: '简单易用的大模型即时通信机器人开发平台' },
-      { name: 'LobeChat', icon: <img src="https://img.thelazy.top/2025/07/19/logo-3d.webp" alt="LobeChat" className="w-8 h-8 rounded-md" />, url: 'https://github.com/lobehub/lobe-chat', description: '简单易用的大模型即时通信机器人开发平台' },
-      { name: '沉浸式翻译', icon: <img src="https://img.thelazy.top/2025/07/19/logo.png" alt="沉浸式翻译" className="w-8 h-8 rounded-md" />, url: 'https://immersivetranslate.com', description: '简单易用的大模型即时通信机器人开发平台' }
+      {
+        name: 'LangBot',
+        icon: <img src="https://img.thelazy.top/2025/07/19/langbot-logo-20250719015647029.png " alt="LangBot" className="w-8 h-8 rounded-md" />,
+        url: 'https://github.com/langbot-app/LangBot ',
+        description: '简单易用的大模型即时通信机器人开发平台'
+      },
+      {
+        name: 'NextWeb',
+        icon: <img src="https://img.thelazy.top/2025/07/19/153288546.png " alt="NextWeb" className="w-8 h-8 rounded-md" />,
+        url: 'https://github.com/ChatGPTNextWeb/NextChat ',
+        description: '一个易于使用且功能强大的开源 ChatGPT Web 界面，支持多模型、多角色、语音交互等特性，适用于个人和企业用户。'
+      },
+      {
+        name: 'ChatBox',
+        icon: <img src="https://img.thelazy.top/2025/07/19/icon.png " alt="ChatBox" className="w-8 h-8 rounded-md" />,
+        url: 'https://github.com/chatboxai/chatbox ',
+        description: '一个开源的 AI 聊天客户端，支持本地模型运行，注重隐私保护，适用于 macOS、Windows 和 Linux。'
+      },
+      {
+        name: 'CherryStudio',
+        icon: <img src="https://img.thelazy.top/2025/07/19/187777663.png " alt="CherryStudio" className="w-8 h-8 rounded-md" />,
+        url: 'https://github.com/CherryHQ/cherry-studio ',
+        description: 'CherryStudio 是一个用于构建 AI 助手和聊天机器人的可视化开发平台，支持自定义模型和插件扩展。'
+      },
+      {
+        name: 'LobeChat',
+        icon: <img src="https://img.thelazy.top/2025/07/19/logo-3d.webp " alt="LobeChat" className="w-8 h-8 rounded-md" />,
+        url: 'https://github.com/lobehub/lobe-chat ',
+        description: 'LobeChat 是一个可扩展的开源 AI 聊天客户端，支持多种大模型，提供美观的用户界面和丰富的功能插件。'
+      },
+      {
+        name: t('沉浸式翻译'),
+        icon: <img src="https://img.thelazy.top/2025/07/19/logo.png " alt="沉浸式翻译" className="w-8 h-8 rounded-md" />,
+        url: 'https://immersivetranslate.com ',
+        description: '沉浸式翻译是一款浏览器扩展，提供网页内容的实时翻译，支持多种语言和 AI 模型，提升多语言浏览体验。'
+      }
     ];
-
     return (
       <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-semi-color-bg-1 border-t border-semi-color-border">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-semi-color-text-0">
-              一键接入众多应用
+              {t('一键接入众多应用')}
             </h2>
             <Text className="text-lg sm:text-xl text-semi-color-text-1 max-w-4xl mx-auto !text-semi-color-text-2">
-              支持任何适配 OpenAI 标准的应用，聊天、翻译、生产力等各种应用，一键接入，快速实现"启航+X"
+              {t('支持任何适配 OpenAI 标准的应用，聊天、翻译、生产力等各种应用，一键接入，快速实现"启航+X"')}
             </Text>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {applications.map((app, index) => (
               <Card
@@ -310,16 +323,15 @@ const Home = () => {
                         {app.icon}
                       </div>
                       <Text className="font-medium text-semi-color-text-0 group-hover:text-semi-color-primary text-sm sm:text-base truncate">
-                        {app.name}
+                        {t(app.name)}
                       </Text>
                     </div>
                     <IconChevronRight className="text-semi-color-text-2 group-hover:text-semi-color-primary transition-colors flex-shrink-0 ml-2" size="large" />
                   </div>
-
                   {/* 底部：描述文本 */}
                   <div className="flex-1 flex items-end">
                     <Text className="text-xs sm:text-sm text-semi-color-text-2 leading-relaxed">
-                      {app.description}
+                      {t(app.description)}
                     </Text>
                   </div>
                 </div>
@@ -334,47 +346,45 @@ const Home = () => {
   // 优势展示区域组件
   const AdvantagesSection = () => {
     const isDark = theme === 'dark';
-
     const advantages = [
       {
         title: '稳定快速',
-        description: '采用 CN2 GIA 高速线路，确保线路稳定可靠',
+        description: t('采用 CN2 GIA 高速线路，确保线路稳定可靠'),
         icon: <IconBolt size="extra-large" />,
         color: '#10B981'
       },
       {
         title: '低价成本',
-        description: '相对于市面的费率，我们的价格至少优惠30%及以上，帮助您节省成本',
+        description: t('相对于市面的费率，我们的价格至少优惠30%及以上，帮助您节省成本'),
         icon: <IconCoinMoneyStroked size="extra-large" />,
         color: '#F59E0B'
       },
       {
         title: '高效集成',
-        description: '提供完整的文档和SDK，支持快速和便捷地对接开发',
+        description: t('提供完整的文档和SDK，支持快速和便捷地对接开发'),
         icon: <IconComponent size="extra-large" />,
         color: '#3B82F6'
       },
       {
         title: '安全保障',
-        description: '采用多层安全措施，包括身份验证、数据加密和访问控制',
+        description: t('采用多层安全措施，包括身份验证、数据加密和访问控制'),
         icon: <IconShield size="extra-large" />,
         color: '#EF4444'
       },
       {
         title: '超多模型',
-        description: '提供文本聊天、语音识别、语音生成、绘图等多种模型',
+        description: t('提供文本聊天、语音识别、语音生成、绘图等多种模型'),
         icon: <IconApps size="extra-large" />,
         color: '#8B5CF6'
       },
       {
         title: '技术支持',
-        description: '提供全天候的技术支持，快速解决问题，减少停机时间',
+        description: t('提供全天候的技术支持，快速解决问题，减少停机时间'),
         icon: <IconCustomerSupport size="extra-large" />,
         color: '#06B6D4'
       }
     ];
 
-    // 根据主题动态生成卡片样式
     const getCardStyle = () => {
       if (isDark) {
         return {
@@ -391,7 +401,6 @@ const Home = () => {
       }
     };
 
-    // 根据主题动态生成图标容器样式
     const getIconContainerStyle = (color) => {
       if (isDark) {
         return {
@@ -411,13 +420,12 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-semi-color-text-0">
-              我们的优势
+              {t('我们的优势')}
             </h2>
             <Text className="text-lg sm:text-xl text-semi-color-text-1 max-w-3xl mx-auto">
-              专业的技术团队，为您提供稳定、安全、高效的AI服务体验
+              {t('专业的技术团队，为您提供稳定、安全、高效的AI服务体验')}
             </Text>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
             {advantages.map((advantage, index) => (
               <Card
@@ -434,15 +442,13 @@ const Home = () => {
                     {advantage.icon}
                   </div>
                 </div>
-
                 {/* 标题 */}
                 <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-semi-color-text-0 group-hover:text-semi-color-primary transition-colors duration-300">
-                  {advantage.title}
+                  {t(advantage.title)}
                 </h3>
-
                 {/* 描述 */}
                 <Text className="text-semi-color-text-1 leading-relaxed text-sm sm:text-base">
-                  {advantage.description}
+                  {t(advantage.description)}
                 </Text>
               </Card>
             ))}
@@ -457,41 +463,41 @@ const Home = () => {
     const steps = [
       {
         step: 1,
-        title: '注册账户',
-        description: '创建您的启航AI账户，开启AI之旅的第一步',
+        title: t('注册账户'),
+        description: t('创建您的启航AI账户，开启AI之旅的第一步'),
         icon: <IconUser size="extra-large" />,
-        url: 'https://api.qhaigc.net/register',
+        url: 'https://api.qhaigc.net/register ',
         color: '#3B82F6'
       },
       {
         step: 2,
-        title: '第一笔充值',
-        description: '为您的账户充值以开始使用，支持多种支付方式',
+        title: t('第一笔充值'),
+        description: t('为您的账户充值以开始使用，支持多种支付方式'),
         icon: <IconCreditCard size="extra-large" />,
-        url: 'https://api.qhaigc.net/console/topup',
+        url: 'https://api.qhaigc.net/console/topup ',
         color: '#10B981'
       },
       {
         step: 3,
-        title: '选择模型',
-        description: '查看定价并选择适合您需求的AI模型',
+        title: t('选择模型'),
+        description: t('查看定价并选择适合您需求的AI模型'),
         icon: <IconList size="extra-large" />,
-        url: 'https://api.qhaigc.net/pricing',
+        url: 'https://api.qhaigc.net/pricing ',
         color: '#F59E0B'
       },
       {
         step: 4,
-        title: '接入应用',
-        description: '配置您的应用，使用我们提供的API接口',
+        title: t('接入应用'),
+        description: t('配置您的应用，使用我们提供的API接口'),
         icon: <IconSetting size="extra-large" />,
         url: null,
         color: '#8B5CF6',
-        baseUrl: 'https://api.qhaigc.net'
+        baseUrl: 'https://api.qhaigc.net '
       },
       {
         step: 5,
-        title: '大功告成',
-        description: '开始享受稳定高效的AI服务，探索无限可能',
+        title: t('大功告成'),
+        description: t('开始享受稳定高效的AI服务，探索无限可能'),
         icon: <IconTick size="extra-large" />,
         url: null,
         color: '#EF4444'
@@ -500,8 +506,7 @@ const Home = () => {
 
     const copyToClipboard = (text, buttonElement) => {
       navigator.clipboard.writeText(text).then(() => {
-        showSuccess('BaseURL已复制到剪贴板');
-        // 添加成功动画效果
+        showSuccess(t('BaseURL已复制到剪贴板'));
         if (buttonElement) {
           buttonElement.classList.add('copy-button-success');
           setTimeout(() => {
@@ -509,7 +514,7 @@ const Home = () => {
           }, 1000);
         }
       }).catch(() => {
-        showError('复制失败，请手动复制');
+        showError(t('复制失败，请手动复制'));
       });
     };
 
@@ -518,17 +523,15 @@ const Home = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-semi-color-text-0">
-              接入步骤
+              {t('接入步骤')}
             </h2>
             <Text className="text-lg sm:text-xl text-semi-color-text-1">
-              简单几步，快速接入启航AI服务
+              {t('简单几步，快速接入启航AI服务')}
             </Text>
           </div>
-
           <div className="relative">
             {/* 垂直连接线 */}
             <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-0.5 timeline-line"></div>
-
             <div className="space-y-6 sm:space-y-8">
               {steps.map((stepItem, index) => (
                 <div key={index} className="relative flex items-center group step-card">
@@ -555,7 +558,6 @@ const Home = () => {
                       {stepItem.step}
                     </div>
                   </div>
-
                   {/* 步骤内容卡片 */}
                   <div className="ml-4 sm:ml-6 flex-1">
                     <Card
@@ -564,17 +566,15 @@ const Home = () => {
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
                         <div className="flex-1 mb-3 sm:mb-0">
                           <h3 className="text-lg sm:text-xl font-bold mb-2 text-semi-color-text-0 group-hover:text-semi-color-primary transition-colors duration-300">
-                            {stepItem.title}
+                            {t(stepItem.title)}
                           </h3>
                           <Text className="text-semi-color-text-1 leading-relaxed text-sm sm:text-base">
-                            {stepItem.description}
+                            {t(stepItem.description)}
                           </Text>
-
                           {/* BaseURL 特殊处理 */}
                           {stepItem.baseUrl && (
                             <div className="mt-3 p-3 bg-semi-color-bg-2 rounded-lg border border-semi-color-border">
                               <Text className="text-xs text-semi-color-text-2 mb-2">BaseURL:</Text>
-
                               {/* 第一个 BaseURL */}
                               <div className="flex items-center justify-between mb-2 p-2 baseurl-input-box rounded border border-dashed">
                                 <Text className="font-mono text-semi-color-text-1 text-xs sm:text-sm flex-1 mr-2">
@@ -586,10 +586,9 @@ const Home = () => {
                                   onClick={(e) => copyToClipboard(stepItem.baseUrl, e.target.closest('button'))}
                                   className="!rounded-full !px-2 !py-1 !text-xs hover:!scale-105 transition-transform duration-200"
                                 >
-                                  复制
+                                  {t('复制')}
                                 </Button>
                               </div>
-
                               {/* 第二个 BaseURL */}
                               <div className="flex items-center justify-between mb-2 p-2 baseurl-input-box rounded border border-dashed">
                                 <Text className="font-mono text-semi-color-text-1 text-xs sm:text-sm flex-1 mr-2">
@@ -601,13 +600,12 @@ const Home = () => {
                                   onClick={(e) => copyToClipboard(`${stepItem.baseUrl}/v1`, e.target.closest('button'))}
                                   className="!rounded-full !px-2 !py-1 !text-xs hover:!scale-105 transition-transform duration-200"
                                 >
-                                  复制
+                                  {t('复制')}
                                 </Button>
                               </div>
                             </div>
                           )}
                         </div>
-
                         {/* 操作按钮 */}
                         {stepItem.url && (
                           <div className="flex-shrink-0 sm:ml-4">
@@ -622,7 +620,7 @@ const Home = () => {
                                 color: 'white'
                               }}
                             >
-                              前往
+                              {t('前往')}
                             </Button>
                           </div>
                         )}
@@ -641,14 +639,12 @@ const Home = () => {
   // 联系我们区域组件
   const ContactSection = () => {
     const isDark = theme === 'dark';
-
     const contactInfo = {
       title: '官方 QQ 群',
       groupNumber: '712747875',
       subtitle: '加群后直接私聊群主即可'
     };
 
-    // 根据主题动态生成卡片样式
     const getCardStyle = () => {
       if (isDark) {
         return {
@@ -667,13 +663,12 @@ const Home = () => {
       }
     };
 
-    // 复制群号到剪贴板
     const copyGroupNumber = (e) => {
       e.stopPropagation();
       navigator.clipboard.writeText(contactInfo.groupNumber).then(() => {
-        showSuccess('群号已复制到剪贴板');
+        showSuccess(t('群号已复制到剪贴板'));
       }).catch(() => {
-        showError('复制失败，请手动复制');
+        showError(t('复制失败，请手动复制'));
       });
     };
 
@@ -682,13 +677,12 @@ const Home = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-semi-color-text-0">
-              联系我们
+              {t('联系我们')}
             </h2>
             <Text className="text-lg sm:text-xl text-semi-color-text-1 max-w-2xl mx-auto">
-              遇到问题或需要技术支持？我们的专业团队随时为您提供帮助
+              {t('遇到问题或需要技术支持？我们的专业团队随时为您提供帮助')}
             </Text>
           </div>
-
           {/* 主要联系卡片 - 左右布局 */}
           <div className="flex justify-center">
             <Card
@@ -708,25 +702,22 @@ const Home = () => {
                     <IconUserGroup size="large" style={{ color: '#1890FF' }} />
                   </div>
                 </div>
-
                 {/* 右侧内容 */}
                 <div className="flex-1 min-w-0">
                   {/* 主标题 */}
                   <h3 className="text-lg sm:text-xl font-bold mb-1 text-semi-color-text-0">
-                    {contactInfo.title}
+                    {t(contactInfo.title)}
                   </h3>
-
                   {/* 副标题 */}
                   <Text className="text-xs sm:text-sm text-semi-color-text-1 mb-3 leading-relaxed">
-                    {contactInfo.subtitle}
+                    {t(contactInfo.subtitle)}
                   </Text>
-
                   {/* 群号显示 - 可点击复制，带复制图标 */}
                   <div className="flex items-center">
                     <div
                       className="inline-flex items-center space-x-2 cursor-pointer hover:bg-semi-color-bg-2 px-2 py-1 rounded-md transition-all duration-200 group/copy border border-dashed border-semi-color-border hover:border-semi-color-primary"
                       onClick={copyGroupNumber}
-                      title="点击复制群号"
+                      title={t('点击复制群号')}
                     >
                       <Text className="text-base sm:text-lg font-bold text-semi-color-primary font-mono group-hover/copy:text-semi-color-primary-hover transition-colors duration-200">
                         {contactInfo.groupNumber}
@@ -776,4 +767,3 @@ const Home = () => {
 };
 
 export default Home;
-

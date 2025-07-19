@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useContext } from 'react';
+import React, { useEffect, useState, useMemo, useContext, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@douyinfe/semi-ui';
 import { getFooterHTML, getLogo, getSystemName } from '../../helpers';
@@ -7,17 +7,13 @@ import { StatusContext } from '../../context/Status';
 const FooterBar = () => {
   const { t } = useTranslation();
   const [footer, setFooter] = useState(getFooterHTML());
-  const systemName = getSystemName();
-  const logo = getLogo();
-  const [statusState] = useContext(StatusContext);
-  const isDemoSiteMode = statusState?.status?.demo_site_enabled || false;
 
-  const loadFooter = () => {
+  const loadFooter = useCallback(() => {
     let footer_html = localStorage.getItem('footer_html');
     if (footer_html) {
       setFooter(footer_html);
     }
-  };
+  }, []);
 
   const currentYear = new Date().getFullYear();
 
@@ -28,14 +24,14 @@ const FooterBar = () => {
         {/* 版权信息 */}
         <div className="flex flex-wrap items-center justify-center gap-2">
           <Typography.Text className="text-sm !text-semi-color-text-0 font-medium">
-            © {currentYear} 启航 AI. All Rights Reserved.
+            © {currentYear} {t('启航 AI')}. All Rights Reserved.
           </Typography.Text>
         </div>
 
         {/* 免责声明 */}
         <div className="max-w-[1000px]">
           <Typography.Text className="text-xs !text-semi-color-text-1 leading-relaxed">
-            本站API适用于测试和体验目的，请自觉遵守您当地法律法规，切勿用于非法用途，本站不承担任何法律责任。
+            {t('本站API适用于测试和体验目的，请自觉遵守您当地法律法规，切勿用于非法用途，本站不承担任何法律责任。')}
           </Typography.Text>
         </div>
 
@@ -65,11 +61,11 @@ const FooterBar = () => {
         <div className="w-full max-w-[400px] h-px bg-semi-color-border opacity-30 my-1"></div>
       </div>
     </footer>
-  ), [currentYear]);
+  ), [currentYear, t]);
 
   useEffect(() => {
     loadFooter();
-  }, []);
+  }, [loadFooter]);
 
   return (
     <div className="w-full">

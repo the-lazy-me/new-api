@@ -32,11 +32,13 @@ import {
   IconSearch,
   IconTreeTriangleDown,
   IconMore,
+  IconCopy,
 } from '@douyinfe/semi-icons';
 import { Key } from 'lucide-react';
 import EditToken from '../../pages/Token/EditToken';
 import { useTranslation } from 'react-i18next';
 import { useTableCompactMode } from '../../hooks/useTableCompactMode';
+import { getServerAddress } from '../../helpers';
 
 const { Text } = Typography;
 
@@ -608,6 +610,53 @@ const TokensTable = () => {
           >
             {compactMode ? t('自适应列表') : t('紧凑列表')}
           </Button>
+        </div>
+      </div>
+
+      {/* BaseURL 显示区域 */}
+      <div className="mb-3 p-3 bg-semi-color-bg-2 rounded-lg border border-semi-color-border">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Text className="text-sm text-semi-color-text-2">BaseURL:</Text>
+            <Text
+              className="font-mono text-sm text-semi-color-text-0 cursor-pointer hover:text-semi-color-primary transition-colors duration-200 select-all"
+              onClick={async () => {
+                const serverAddress = getServerAddress();
+                if (await copy(serverAddress)) {
+                  showSuccess(t('BaseURL已复制到剪贴板！'));
+                } else {
+                  Modal.error({
+                    title: t('无法复制到剪贴板，请手动复制'),
+                    content: serverAddress,
+                    size: 'large',
+                  });
+                }
+              }}
+              title={t('点击复制BaseURL')}
+            >
+              {getServerAddress()}
+            </Text>
+          </div>
+          <Button
+            size="small"
+            theme="borderless"
+            type="tertiary"
+            icon={<IconCopy />}
+            onClick={async () => {
+              const serverAddress = getServerAddress();
+              if (await copy(serverAddress)) {
+                showSuccess(t('BaseURL已复制到剪贴板！'));
+              } else {
+                Modal.error({
+                  title: t('无法复制到剪贴板，请手动复制'),
+                  content: serverAddress,
+                  size: 'large',
+                });
+              }
+            }}
+            className="!p-1 hover:!bg-semi-color-bg-3 transition-colors duration-200"
+            title={t('复制BaseURL')}
+          />
         </div>
       </div>
 
