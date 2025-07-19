@@ -8,6 +8,8 @@ import { IconPlay, IconFile, IconChevronRight, IconUserGroup, IconPhone, IconLin
 import { Link } from 'react-router-dom';
 import NoticeModal from '../../components/layout/NoticeModal';
 import { OpenAI, Claude, Gemini, DeepSeek, Qwen, XAI, Zhipu, Wenxin, Qingyan } from '@lobehub/icons';
+import { getServerAddress } from '../../helpers';
+
 
 const { Text } = Typography;
 
@@ -492,7 +494,7 @@ const Home = () => {
         icon: <IconSetting size="extra-large" />,
         url: null,
         color: '#8B5CF6',
-        baseUrl: 'https://api.qhaigc.net '
+        baseUrl: getServerAddress()
       },
       {
         step: 5,
