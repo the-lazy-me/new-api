@@ -24,7 +24,7 @@ import {
   IconApps,
   IconCoinMoneyStroked,
   IconFile,
-  IconHistogram,
+  IconCalendar,
 } from '@douyinfe/semi-icons';
 import {
   Avatar,
@@ -132,7 +132,7 @@ const HeaderBar = () => {
       text: t('更新日志'),
       itemKey: 'about',
       to: '/about',
-      icon: <IconHistogram size="default" />,
+      icon: <IconCalendar size="default" />,
     },
   ];
 
