@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Button, Typography, Card, Space } from '@douyinfe/semi-ui';
-import { API, showError, isMobile, showSuccess } from '../../helpers';
+import { API, showError, isMobile, showSuccess, getServerAddress, getLogo, getSystemName } from '../../helpers';
 import { StatusContext } from '../../context/Status';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/Theme';
@@ -8,10 +8,11 @@ import { IconPlay, IconFile, IconChevronRight, IconUserGroup, IconPhone, IconLin
 import { Link } from 'react-router-dom';
 import NoticeModal from '../../components/layout/NoticeModal';
 import { OpenAI, Claude, Gemini, DeepSeek, Qwen, XAI, Zhipu, Wenxin, Qingyan } from '@lobehub/icons';
-import { getServerAddress } from '../../helpers';
 
 
 const { Text } = Typography;
+const systemName = getSystemName();  //获取系统名称，默认为“启航 AI”
+const logo = getLogo();  //获取 Logo，默认为 /logo.png
 
 // 优化的打字机动画Hook - 使用ref避免重新渲染
 const useTypewriter = (texts, speed = 100, delay = 2000) => {
@@ -81,7 +82,7 @@ const Home = () => {
 
   // 打字机动画文本（国际化）
   const typewriterTexts = [
-    t('2025，大模型之年，启航AI，您的不二之选'),
+    t('2025，大模型之年，{{systemName}}，您的不二之选', { systemName }),
     t('我们致力于提供聚合大模型API，为用户提供稳定、好用的解决方案。')
   ];
 
@@ -134,7 +135,7 @@ const Home = () => {
         {/* 左侧内容 */}
         <div className="text-center lg:text-left order-2 lg:order-1">
           <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-8xl font-semibold mb-6 sm:mb-8 leading-relaxed" style={{ color: '#0059F9' }}>
-            {t('启航 AI')}
+            {systemName}
           </h1>
           <h2 className="text-lg sm:text-lg md:text-xl lg:text-2xl font-normal mb-6 sm:mb-8 text-semi-color-text-1 leading-relaxed">
             {t('助你低成本探索AIGC的无限可能')}
@@ -180,8 +181,8 @@ const Home = () => {
         {/* 右侧Logo */}
         <div className="flex justify-center lg:justify-end order-1 lg:order-2">
           <img
-            src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png "
-            alt={t('启航AI Logo')}
+            src={logo}
+            alt={t('{{systemName}} Logo', { systemName })}
             className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 xl:w-[28rem] xl:h-[28rem] object-contain"
           />
         </div>
@@ -228,7 +229,7 @@ const Home = () => {
               {t('适配众多 AI 大模型')}
             </h2>
             <Text className="sm:text-xl text-semi-color-text-1 max-w-4xl mx-auto !text-semi-color-text-2">
-              {t('覆盖全网各种主流模型，同时提供 ASR（语音识别）、TTS（文本转语音）、绘图等启航特供模型，覆盖 90%+ 的场景')}
+              {t('覆盖全网各种主流模型，同时提供 ASR（语音识别）、TTS（文本转语音）、绘图等{{systemName}}特供模型，覆盖 90%+ 的场景', { systemName })}
             </Text>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -306,7 +307,7 @@ const Home = () => {
               {t('一键接入众多应用')}
             </h2>
             <Text className="text-lg sm:text-xl text-semi-color-text-1 max-w-4xl mx-auto !text-semi-color-text-2">
-              {t('支持任何适配 OpenAI 标准的应用，聊天、翻译、生产力等各种应用，一键接入，快速实现"启航+X"')}
+              {t('支持任何适配 OpenAI 标准的应用，聊天、翻译、生产力等各种应用，一键接入，快速实现"{{systemName}}+X"', { systemName })}
             </Text>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
@@ -466,9 +467,9 @@ const Home = () => {
       {
         step: 1,
         title: t('注册账户'),
-        description: t('创建您的启航AI账户，开启AI之旅的第一步'),
+        description: t('创建您的{{systemName}}账户，开启AI之旅的第一步', { systemName }),
         icon: <IconUser size="extra-large" />,
-        url: 'https://api.qhaigc.net/register ',
+        url: `${getServerAddress()}/register`,
         color: '#3B82F6'
       },
       {
@@ -476,7 +477,7 @@ const Home = () => {
         title: t('第一笔充值'),
         description: t('为您的账户充值以开始使用，支持多种支付方式'),
         icon: <IconCreditCard size="extra-large" />,
-        url: 'https://api.qhaigc.net/console/topup ',
+        url: `${getServerAddress()}/console/topup`,
         color: '#10B981'
       },
       {
@@ -484,7 +485,7 @@ const Home = () => {
         title: t('选择模型'),
         description: t('查看定价并选择适合您需求的AI模型'),
         icon: <IconList size="extra-large" />,
-        url: 'https://api.qhaigc.net/pricing ',
+        url: `${getServerAddress()}/pricing`,
         color: '#F59E0B'
       },
       {
@@ -528,7 +529,7 @@ const Home = () => {
               {t('接入步骤')}
             </h2>
             <Text className="text-lg sm:text-xl text-semi-color-text-1">
-              {t('简单几步，快速接入启航AI服务')}
+              {t('简单几步，快速接入{{systemName}}服务', { systemName })}
             </Text>
           </div>
           <div className="relative">

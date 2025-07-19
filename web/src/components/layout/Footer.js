@@ -24,7 +24,7 @@ const FooterBar = () => {
         {/* 版权信息 */}
         <div className="flex flex-wrap items-center justify-center gap-2">
           <Typography.Text className="text-sm !text-semi-color-text-0 font-medium">
-            © {currentYear} {t('启航 AI')}. All Rights Reserved.
+            © {currentYear} {t('{{systemName}}', { systemName: getSystemName() })}. All Rights Reserved.
           </Typography.Text>
         </div>
 
