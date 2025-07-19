@@ -1575,7 +1575,7 @@
   "加载中...": "Loading...",
   "正在跳转...": "Redirecting...",
   "暂无公告": "No Notice",
-  "操练场": "Playground",
+  "在线调试": "Playground",
   "欢迎使用，请完成以下设置以开始使用系统": "Welcome to use, please complete the following settings to start using the system",
   "数据库信息": "Database Information",
   "您正在使用 MySQL 数据库。MySQL 是一个可靠的关系型数据库管理系统，适合生产环境使用。": "You are using the MySQL database. MySQL is a reliable relational database management system, suitable for production environments.",
