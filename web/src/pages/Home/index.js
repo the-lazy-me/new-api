@@ -224,9 +224,8 @@ const Home = () => {
       { name: 'DeepSeek', icon: <DeepSeek.Color size={32} />, url: 'https://deepseek.com' },
       { name: 'Qwen', icon: <Qwen.Color size={32} />, url: 'https://qwenlm.github.io' },
       { name: 'XAI', icon: <XAI size={32} />, url: 'https://x.ai' },
-      { name: 'Zhipu', icon: <Zhipu.Color size={32} />, url: 'https://www.zhipuai.cn' },
-      { name: 'Wenxin', icon: <Wenxin.Color size={32} />, url: 'https://wenxin.baidu.com' },
-      { name: 'Qingyan', icon: <Qingyan.Color size={32} />, url: 'https://qingyan.zte.com.cn' },
+      { name: '智谱清言', icon: <Zhipu.Color size={32} />, url: 'https://www.zhipuai.cn' },
+      { name: '通义千问', icon: <Qwen.Color size={32} />, url: 'https://www.aliyun.com/product/bailian' },
       { name: '语音识别', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="ASR" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
       { name: '文本转语音', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="TTS" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
       { name: '启航绘图 V1', icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png" alt="绘图V1" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing' },
@@ -275,13 +274,12 @@ const Home = () => {
   // 应用适配区域组件
   const ApplicationsSection = () => {
     const applications = [
-      { name: 'LangBot', icon: <img src="![](https://img.thelazy.top/2025/07/19/langbot-logo-20250719015647029.png)" alt="LangBot" className="w-8 h-8" />, url: 'https://github.com/langbot-app/LangBot' },
-      { name: 'NextWeb', icon: <img src="https://img.thelazy.top/2025/07/19/153288546.png" alt="NextWeb" className="w-8 h-8" />, url: 'https://github.com/ChatGPTNextWeb/NextChat' },
-      { name: 'ChatBox', icon: <img src="https://img.thelazy.top/2025/07/19/icon.png" alt="ChatBox" className="w-8 h-8" />, url: 'https://github.com/chatboxai/chatbox' },
-      { name: 'CherryStudio', icon: <img src="https://img.thelazy.top/2025/07/19/187777663.png" alt="CherryStudio" className="w-8 h-8" />, url: 'https://github.com/CherryHQ/cherry-studio' },
-      { name: 'LobeChat', icon: <img src="https://img.thelazy.top/2025/07/19/logo-3d.webp" alt="LobeChat" className="w-8 h-8" />, url: 'https://github.com/lobehub/lobe-chat' },
-      { name: 'GoAmzAI', icon: <img src="https://img.thelazy.top/2025/07/19/logo-20250719015706437.png" alt="GoAmzAI" className="w-8 h-8" />, url: 'https://d.goamzai.com' },
-      { name: '沉浸式翻译', icon: <img src="https://img.thelazy.top/2025/07/19/logo.png" alt="沉浸式翻译" className="w-8 h-8" />, url: 'https://immersivetranslate.com' }
+      { name: 'LangBot', icon: <img src="https://img.thelazy.top/2025/07/19/langbot-logo-20250719015647029.png" alt="LangBot" className="w-8 h-8 rounded-md" />, url: 'https://github.com/langbot-app/LangBot', description: '简单易用的大模型即时通信机器人开发平台' },
+      { name: 'NextWeb', icon: <img src="https://img.thelazy.top/2025/07/19/153288546.png" alt="NextWeb" className="w-8 h-8 rounded-md" />, url: 'https://github.com/ChatGPTNextWeb/NextChat', description: '简单易用的大模型即时通信机器人开发平台' },
+      { name: 'ChatBox', icon: <img src="https://img.thelazy.top/2025/07/19/icon.png" alt="ChatBox" className="w-8 h-8 rounded-md" />, url: 'https://github.com/chatboxai/chatbox', description: '简单易用的大模型即时通信机器人开发平台' },
+      { name: 'CherryStudio', icon: <img src="https://img.thelazy.top/2025/07/19/187777663.png" alt="CherryStudio" className="w-8 h-8 rounded-md" />, url: 'https://github.com/CherryHQ/cherry-studio', description: '简单易用的大模型即时通信机器人开发平台' },
+      { name: 'LobeChat', icon: <img src="https://img.thelazy.top/2025/07/19/logo-3d.webp" alt="LobeChat" className="w-8 h-8 rounded-md" />, url: 'https://github.com/lobehub/lobe-chat', description: '简单易用的大模型即时通信机器人开发平台' },
+      { name: '沉浸式翻译', icon: <img src="https://img.thelazy.top/2025/07/19/logo.png" alt="沉浸式翻译" className="w-8 h-8 rounded-md" />, url: 'https://immersivetranslate.com', description: '简单易用的大模型即时通信机器人开发平台' }
     ];
 
     return (
@@ -296,24 +294,34 @@ const Home = () => {
             </Text>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {applications.map((app, index) => (
               <Card
                 key={index}
-                className="!p-3 sm:!p-4 !rounded-2xl hover:!shadow-lg transition-all duration-300 cursor-pointer group hover:!scale-105"
+                className="!p-4 sm:!p-5 !rounded-2xl hover:!shadow-lg transition-all duration-300 cursor-pointer group hover:!scale-105"
                 onClick={() => window.open(app.url, '_blank')}
-                style={{ borderRadius: '16px' }}
+                style={{ borderRadius: '16px', minHeight: '120px' }}
               >
-                <div className="flex items-center justify-between h-4">
-                  <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
-                    <div className="flex-shrink-0">
-                      {app.icon}
+                <div className="flex flex-col h-full">
+                  {/* 顶部：图标和名称 */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                      <div className="flex-shrink-0">
+                        {app.icon}
+                      </div>
+                      <Text className="font-medium text-semi-color-text-0 group-hover:text-semi-color-primary text-sm sm:text-base truncate">
+                        {app.name}
+                      </Text>
                     </div>
-                    <Text className="font-medium text-semi-color-text-0 group-hover:text-semi-color-primary text-sm sm:text-base truncate">
-                      {app.name}
+                    <IconChevronRight className="text-semi-color-text-2 group-hover:text-semi-color-primary transition-colors flex-shrink-0 ml-2" size="large" />
+                  </div>
+
+                  {/* 底部：描述文本 */}
+                  <div className="flex-1 flex items-end">
+                    <Text className="text-xs sm:text-sm text-semi-color-text-2 leading-relaxed">
+                      {app.description}
                     </Text>
                   </div>
-                  <IconChevronRight className="text-semi-color-text-2 group-hover:text-semi-color-primary transition-colors flex-shrink-0 ml-2" size="large" />
                 </div>
               </Card>
             ))}
@@ -419,7 +427,7 @@ const Home = () => {
               >
                 {/* 图标容器 */}
                 <div
-                  className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                  className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
                   style={getIconContainerStyle(advantage.color)}
                 >
                   <div style={{ color: advantage.color }}>
@@ -637,8 +645,7 @@ const Home = () => {
     const contactInfo = {
       title: '官方 QQ 群',
       groupNumber: '712747875',
-      description: '加群后直接私聊群主',
-      action: () => window.open('https://qm.qq.com/q/nICQZrwRhY', '_blank')
+      subtitle: '加群后直接私聊群主即可'
     };
 
     // 根据主题动态生成卡片样式
@@ -685,69 +692,51 @@ const Home = () => {
           {/* 主要联系卡片 - 左右布局 */}
           <div className="flex justify-center">
             <Card
-              className="!p-6 sm:!p-8 hover:!shadow-2xl hover:!scale-105 transition-all duration-300 !rounded-2xl group max-w-2xl w-full"
+              className="!p-4 sm:!p-6 hover:!shadow-2xl hover:!scale-105 transition-all duration-300 !rounded-2xl group max-w-lg w-full"
               style={getCardStyle()}
             >
-              <div className="flex items-center space-x-6 sm:space-x-8">
+              <div className="flex items-center space-x-8 sm:space-x-10">
                 {/* 左侧图标 */}
                 <div className="flex-shrink-0">
                   <div
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg"
                     style={{
                       background: 'linear-gradient(135deg, #1890FF20 0%, #1890FF10 100%)',
                       border: '2px solid #1890FF30'
                     }}
                   >
-                    <IconUserGroup size="extra-large" style={{ color: '#1890FF' }} />
+                    <IconUserGroup size="large" style={{ color: '#1890FF' }} />
                   </div>
                 </div>
 
-                {/* 中间内容 */}
-                <div className="flex-1 min-w-0 border-l border-semi-color-border pl-6 pr-6 sm:pl-8 sm:pr-8">
-                  {/* 标题 */}
-                  <h3 className="text-xl sm:text-2xl font-bold mb-3 text-semi-color-text-0">
+                {/* 右侧内容 */}
+                <div className="flex-1 min-w-0">
+                  {/* 主标题 */}
+                  <h3 className="text-lg sm:text-xl font-bold mb-1 text-semi-color-text-0">
                     {contactInfo.title}
                   </h3>
 
-                  {/* 群号 - 可点击复制 */}
-                  <div className="mb-3">
-                    <Text className="text-xs text-semi-color-text-2 mb-1">群号</Text>
+                  {/* 副标题 */}
+                  <Text className="text-xs sm:text-sm text-semi-color-text-1 mb-3 leading-relaxed">
+                    {contactInfo.subtitle}
+                  </Text>
+
+                  {/* 群号显示 - 可点击复制，带复制图标 */}
+                  <div className="flex items-center">
                     <div
-                      className="inline-block cursor-pointer hover:bg-semi-color-bg-2 px-2 py-1 rounded transition-colors duration-200"
+                      className="inline-flex items-center space-x-2 cursor-pointer hover:bg-semi-color-bg-2 px-2 py-1 rounded-md transition-all duration-200 group/copy border border-dashed border-semi-color-border hover:border-semi-color-primary"
                       onClick={copyGroupNumber}
                       title="点击复制群号"
                     >
-                      <Text className="text-xl sm:text-2xl font-bold text-semi-color-primary font-mono hover:text-semi-color-primary-hover">
+                      <Text className="text-base sm:text-lg font-bold text-semi-color-primary font-mono group-hover/copy:text-semi-color-primary-hover transition-colors duration-200">
                         {contactInfo.groupNumber}
                       </Text>
+                      <IconLink
+                        size="small"
+                        className="text-semi-color-text-2 group-hover/copy:text-semi-color-primary transition-colors duration-200"
+                      />
                     </div>
                   </div>
-
-                  {/* 描述文本 */}
-                  <Text className="text-sm sm:text-base text-semi-color-text-1 leading-relaxed">
-                    {contactInfo.description}
-                  </Text>
-                </div>
-
-                {/* 右侧按钮 */}
-                <div className="flex-shrink-0">
-                  <Button
-                    size="large"
-                    onClick={() => window.open('https://qm.qq.com/q/nICQZrwRhY', '_blank')}
-                    className="!rounded-xl !px-4 !py-3 !text-sm !font-medium hover:!scale-105 transition-transform duration-200"
-                    style={{
-                      backgroundColor: '#1890FF',
-                      borderColor: '#1890FF',
-                      color: 'white',
-                      minWidth: '80px',
-                      height: '60px'
-                    }}
-                  >
-                    <div className="flex flex-col items-center leading-tight">
-                      <span>立即</span>
-                      <span>加入</span>
-                    </div>
-                  </Button>
                 </div>
               </div>
             </Card>
