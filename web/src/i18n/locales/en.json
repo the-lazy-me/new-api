@@ -1812,5 +1812,6 @@
   "群号已复制到剪贴板": "Group number has been copied to clipboard",
   "点击复制群号": "Click to copy group number",
   "前往": "Go",
-  "本站API适用于测试和体验目的，请自觉遵守您当地法律法规，切勿用于非法用途，本站不承担任何法律责任。": "This site's API is for testing and experience purposes only. Please comply with local laws and regulations. Do not use it for illegal purposes. This site does not assume any legal responsibility."
+  "本站API适用于测试和体验目的，请自觉遵守您当地法律法规，切勿用于非法用途，本站不承担任何法律责任。": "This site's API is for testing and experience purposes only. Please comply with local laws and regulations. Do not use it for illegal purposes. This site does not assume any legal responsibility.",
+  "创建于：": "Created at: "
 }
