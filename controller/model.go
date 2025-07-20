@@ -2,8 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/samber/lo"
 	"net/http"
 	"one-api/common"
 	"one-api/constant"
@@ -16,6 +14,9 @@ import (
 	"one-api/relay/channel/moonshot"
 	relaycommon "one-api/relay/common"
 	"one-api/setting"
+
+	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
 )
 
 // https://platform.openai.com/docs/api-reference/models/list
@@ -116,15 +117,19 @@ func ListModels(c *gin.Context) {
 		}
 		for allowModel, _ := range tokenModelLimit {
 			if oaiModel, ok := openAIModelsMap[allowModel]; ok {
-				oaiModel.SupportedEndpointTypes = model.GetModelSupportEndpointTypes(allowModel)
+				// 使用自定义模型标签
+				tags := model.GetCustomModelTags(allowModel)
+				oaiModel.Tags = tags
 				userOpenAiModels = append(userOpenAiModels, oaiModel)
 			} else {
+				// 使用自定义模型标签
+				tags := model.GetCustomModelTags(allowModel)
 				userOpenAiModels = append(userOpenAiModels, dto.OpenAIModels{
-					Id:                     allowModel,
-					Object:                 "model",
-					Created:                1626777600,
-					OwnedBy:                "custom",
-					SupportedEndpointTypes: model.GetModelSupportEndpointTypes(allowModel),
+					Id:      allowModel,
+					Object:  "model",
+					Created: 1626777600,
+					OwnedBy: "custom",
+					Tags:    tags,
 				})
 			}
 		}
@@ -158,15 +163,19 @@ func ListModels(c *gin.Context) {
 		}
 		for _, modelName := range models {
 			if oaiModel, ok := openAIModelsMap[modelName]; ok {
-				oaiModel.SupportedEndpointTypes = model.GetModelSupportEndpointTypes(modelName)
+				// 使用自定义模型标签
+				tags := model.GetCustomModelTags(modelName)
+				oaiModel.Tags = tags
 				userOpenAiModels = append(userOpenAiModels, oaiModel)
 			} else {
+				// 使用自定义模型标签
+				tags := model.GetCustomModelTags(modelName)
 				userOpenAiModels = append(userOpenAiModels, dto.OpenAIModels{
-					Id:                     modelName,
-					Object:                 "model",
-					Created:                1626777600,
-					OwnedBy:                "custom",
-					SupportedEndpointTypes: model.GetModelSupportEndpointTypes(modelName),
+					Id:      modelName,
+					Object:  "model",
+					Created: 1626777600,
+					OwnedBy: "custom",
+					Tags:    tags,
 				})
 			}
 		}

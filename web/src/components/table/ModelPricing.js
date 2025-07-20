@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useMemo, useState } from 'react';
-import { API, copy, showError, showInfo, showSuccess, getModelCategories, renderModelTag, stringToColor } from '../../helpers';
+import { API, copy, showError, showInfo, showSuccess, getModelCategories, renderModelTag, stringToColor, getModelCategoriesWithCustom, renderModelTagWithCustom, clearCustomModelConfigCache } from '../../helpers';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -33,6 +33,28 @@ import {
 import { UserContext } from '../../context/User/index.js';
 import { AlertCircle } from 'lucide-react';
 
+// 自定义模型标签组件
+const CustomModelTag = ({ modelName, onClick }) => {
+  const [tag, setTag] = useState(null);
+
+  useEffect(() => {
+    const loadTag = async () => {
+      try {
+        const tagElement = await renderModelTagWithCustom(modelName, { onClick });
+        setTag(tagElement);
+      } catch (error) {
+        console.error('渲染自定义模型标签失败:', error);
+        // 降级到默认渲染
+        setTag(renderModelTag(modelName, { onClick }));
+      }
+    };
+
+    loadTag();
+  }, [modelName, onClick]);
+
+  return tag || renderModelTag(modelName, { onClick });
+};
+
 const ModelPricing = () => {
   const { t } = useTranslation();
   const [filteredValue, setFilteredValue] = useState([]);
@@ -43,6 +65,17 @@ const ModelPricing = () => {
   const [selectedGroup, setSelectedGroup] = useState('default');
   const [activeKey, setActiveKey] = useState('all');
   const [pageSize, setPageSize] = useState(10);
+  const [customModelCategories, setCustomModelCategories] = useState(null);
+
+  // 筛选器状态 - 简化管理
+  const [tableFilters, setTableFilters] = useState({});
+
+  // 数据状态 - 移到前面以避免初始化顺序问题
+  const [models, setModels] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userState] = useContext(UserContext);
+  const [groupRatio, setGroupRatio] = useState({});
+  const [usableGroup, setUsableGroup] = useState({});
 
   const rowSelection = useMemo(
     () => ({
@@ -106,60 +139,114 @@ const ModelPricing = () => {
     ) : null;
   }
 
-  function renderSupportedEndpoints(endpoints) {
-    if (!endpoints || endpoints.length === 0) {
+  function renderTags(tags) {
+    if (!tags || tags.length === 0) {
       return null;
     }
     return (
       <Space wrap>
-        {endpoints.map((endpoint, idx) => (
+        {tags.map((tag, idx) => (
           <Tag
-            key={endpoint}
-            color={stringToColor(endpoint)}
+            key={tag}
+            color={stringToColor(tag)}
             size='large'
             shape='circle'
           >
-            {endpoint}
+            {tag}
           </Tag>
         ))}
       </Space>
     );
   }
 
-  const columns = [
+  // 生成筛选选项
+  const availabilityFilters = useMemo(() => {
+    return [
+      { text: t('可用'), value: 'available' },
+      { text: t('不可用'), value: 'unavailable' }
+    ];
+  }, [t]);
+
+  const tagsFilters = useMemo(() => {
+    const allTags = new Set();
+    models.forEach(model => {
+      if (model.tags && model.tags.length > 0) {
+        model.tags.forEach(tag => allTags.add(tag));
+      }
+    });
+    return Array.from(allTags).sort().map(tag => ({
+      text: tag,
+      value: tag
+    }));
+  }, [models]);
+
+  const quotaTypeFilters = useMemo(() => {
+    return [
+      { text: t('按量计费'), value: 0 },
+      { text: t('按次计费'), value: 1 }
+    ];
+  }, [t]);
+
+  const groupsFilters = useMemo(() => {
+    const allGroups = new Set();
+    models.forEach(model => {
+      if (model.enable_groups && model.enable_groups.length > 0) {
+        model.enable_groups.forEach(group => {
+          if (usableGroup[group]) {
+            allGroups.add(group);
+          }
+        });
+      }
+    });
+    return Array.from(allGroups).sort().map(group => ({
+      text: group,
+      value: group
+    }));
+  }, [models, usableGroup]);
+
+  const columns = useMemo(() => [
     {
       title: t('可用性'),
       dataIndex: 'available',
       render: (text, record, index) => {
         return renderAvailable(record.enable_groups.includes(selectedGroup));
       },
-      sorter: (a, b) => {
-        const aAvailable = a.enable_groups.includes(selectedGroup);
-        const bAvailable = b.enable_groups.includes(selectedGroup);
-        return Number(aAvailable) - Number(bAvailable);
+      filters: availabilityFilters,
+      onFilter: (value, record) => {
+        const isAvailable = record.enable_groups.includes(selectedGroup);
+        return value === 'available' ? isAvailable : !isAvailable;
       },
-      defaultSortOrder: 'descend',
     },
     {
-      title: t('可用端点类型'),
-      dataIndex: 'supported_endpoint_types',
+      title: t('标签'),
+      dataIndex: 'tags',
       render: (text, record, index) => {
-        return renderSupportedEndpoints(text);
+        return renderTags(text);
+      },
+      filters: tagsFilters,
+      onFilter: (value, record) => {
+        const tags = record.tags || [];
+        return tags.includes(value);
       },
     },
     {
       title: t('模型名称'),
       dataIndex: 'model_name',
       render: (text, record, index) => {
-        return renderModelTag(text, {
-          onClick: () => {
-            copyText(text);
-          }
-        });
+        return (
+          <CustomModelTag
+            modelName={text}
+            onClick={() => copyText(text)}
+          />
+        );
       },
       onFilter: (value, record) =>
         record.model_name.toLowerCase().includes(value.toLowerCase()),
       filteredValue,
+      sorter: (a, b) => {
+        // 按模型名称进行字母排序
+        return a.model_name.localeCompare(b.model_name);
+      },
     },
     {
       title: t('计费类型'),
@@ -167,7 +254,8 @@ const ModelPricing = () => {
       render: (text, record, index) => {
         return renderQuotaType(parseInt(text));
       },
-      sorter: (a, b) => a.quota_type - b.quota_type,
+      filters: quotaTypeFilters,
+      onFilter: (value, record) => record.quota_type === value,
     },
     {
       title: t('可用分组'),
@@ -175,39 +263,49 @@ const ModelPricing = () => {
       render: (text, record, index) => {
         return (
           <Space wrap>
-            {text.map((group) => {
-              if (usableGroup[group]) {
-                if (group === selectedGroup) {
-                  return (
-                    <Tag color='blue' size='large' shape='circle' prefixIcon={<IconVerify />}>
-                      {group}
-                    </Tag>
-                  );
-                } else {
-                  return (
-                    <Tag
-                      color='blue'
-                      size='large'
-                      shape='circle'
-                      onClick={() => {
-                        setSelectedGroup(group);
-                        showInfo(
-                          t('当前查看的分组为：{{group}}，倍率为：{{ratio}}', {
-                            group: group,
-                            ratio: groupRatio[group],
-                          }),
-                        );
-                      }}
-                      className="cursor-pointer hover:opacity-80 transition-opacity"
-                    >
-                      {group}
-                    </Tag>
-                  );
+            {text
+              .slice() // 创建副本避免修改原数组
+              .sort((a, b) => a.localeCompare(b)) // 按分组名称首字母排序
+              .map((group) => {
+                if (usableGroup[group]) {
+                  if (group === selectedGroup) {
+                    return (
+                      <Tag key={`group-${group}-${record.model_name}`} color='blue' size='large' shape='circle' prefixIcon={<IconVerify />}>
+                        {group}
+                      </Tag>
+                    );
+                  } else {
+                    return (
+                      <Tag
+                        key={`group-${group}-${record.model_name}`}
+                        color='blue'
+                        size='large'
+                        shape='circle'
+                        onClick={() => {
+                          setSelectedGroup(group);
+                          showInfo(
+                            t('当前查看的分组为：{{group}}，倍率为：{{ratio}}', {
+                              group: group,
+                              ratio: groupRatio[group],
+                            }),
+                          );
+                        }}
+                        className="cursor-pointer hover:opacity-80 transition-opacity"
+                      >
+                        {group}
+                      </Tag>
+                    );
+                  }
                 }
-              }
-            })}
+                return null;
+              })}
           </Space>
         );
+      },
+      filters: groupsFilters,
+      onFilter: (value, record) => {
+        const groups = record.enable_groups || [];
+        return groups.includes(value);
       },
     },
     {
@@ -280,13 +378,7 @@ const ModelPricing = () => {
         return content;
       },
     },
-  ];
-
-  const [models, setModels] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [userState] = useContext(UserContext);
-  const [groupRatio, setGroupRatio] = useState({});
-  const [usableGroup, setUsableGroup] = useState({});
+  ], [t, availabilityFilters, tagsFilters, quotaTypeFilters, groupsFilters, selectedGroup, groupRatio, usableGroup, filteredValue]);
 
   const setModelsFormat = (models, groupRatio) => {
     for (let i = 0; i < models.length; i++) {
@@ -330,7 +422,11 @@ const ModelPricing = () => {
   };
 
   const refresh = async () => {
+    // 清除自定义模型配置缓存
+    clearCustomModelConfigCache();
     await loadPricing();
+    // 重新加载自定义模型分类
+    await loadCustomModelCategories();
   };
 
   const copyText = async (text) => {
@@ -343,9 +439,21 @@ const ModelPricing = () => {
 
   useEffect(() => {
     refresh().then();
+    // 异步加载自定义模型分类
+    loadCustomModelCategories();
   }, []);
 
-  const modelCategories = getModelCategories(t);
+  const loadCustomModelCategories = async () => {
+    try {
+      const categories = await getModelCategoriesWithCustom(t);
+      setCustomModelCategories(categories);
+    } catch (error) {
+      console.error('加载自定义模型分类失败:', error);
+      setCustomModelCategories(getModelCategories(t));
+    }
+  };
+
+  const modelCategories = customModelCategories || getModelCategories(t);
 
   const categoryCounts = useMemo(() => {
     const counts = {};
@@ -381,6 +489,22 @@ const ModelPricing = () => {
       >
         {Object.entries(modelCategories)
           .filter(([key]) => availableCategories.includes(key))
+          .sort(([keyA, categoryA], [keyB, categoryB]) => {
+            // 'all' 分类始终排在第一位
+            if (keyA === 'all') return -1;
+            if (keyB === 'all') return 1;
+
+            // 如果有自定义排序值，使用自定义排序
+            const sortA = categoryA.sort || 0;
+            const sortB = categoryB.sort || 0;
+
+            if (sortA !== sortB) {
+              return sortB - sortA; // 降序排列，数值越大越靠前
+            }
+
+            // 如果排序值相同，按标签名称排序
+            return categoryA.label.localeCompare(categoryB.label);
+          })
           .map(([key, category]) => {
             const modelCount = categoryCounts[key] || 0;
 
@@ -462,6 +586,10 @@ const ModelPricing = () => {
         loading={loading}
         rowSelection={rowSelection}
         className="custom-table"
+        onChange={(pagination, filters, sorter, extra) => {
+          // 保存筛选器状态
+          setTableFilters(filters);
+        }}
         empty={
           <Empty
             image={<IllustrationNoResult style={{ width: 150, height: 150 }} />}
@@ -485,7 +613,7 @@ const ModelPricing = () => {
         }}
       />
     </Card>
-  ), [filteredModels, loading, columns, rowSelection, pageSize, t]);
+  ), [filteredModels, loading, columns, rowSelection, pageSize, t, tableFilters]);
 
   return (
     <div className="bg-gray-50">

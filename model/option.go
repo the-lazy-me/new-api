@@ -130,6 +130,11 @@ func InitOptionMap() {
 	common.OptionMap["AutomaticDisableKeywords"] = operation_setting.AutomaticDisableKeywordsToString()
 	common.OptionMap["ExposeRatioEnabled"] = strconv.FormatBool(ratio_setting.IsExposeRatioEnabled())
 
+	// 自定义模型配置选项
+	common.OptionMap["CustomModelConfigEnabled"] = "false"
+	common.OptionMap["CustomModelInfo"] = "{}"
+	common.OptionMap["CustomModelVendorInfo"] = "{}"
+
 	// 自动添加所有注册的模型配置
 	modelConfigs := config.GlobalConfig.ExportAllConfigs()
 	for k, v := range modelConfigs {
@@ -271,6 +276,8 @@ func updateOptionMap(key string, value string) (err error) {
 			setting.DefaultUseAutoGroup = boolValue
 		case "ExposeRatioEnabled":
 			ratio_setting.SetExposeRatioEnabled(boolValue)
+		case "CustomModelConfigEnabled":
+			// 自定义模型配置启用状态，暂时只存储在 OptionMap 中
 		}
 	}
 	switch key {

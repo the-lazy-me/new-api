@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import { Modal, Tag, Typography } from '@douyinfe/semi-ui';
 import { copy, isMobile, showSuccess } from './utils';
+import { getCustomModelConfig, getModelCustomVendorGroup, getCustomVendorIcon } from './customModel';
 import { visit } from 'unist-util-visit';
 import {
   OpenAI,
@@ -316,6 +317,51 @@ export const getModelCategories = (() => {
 })();
 
 /**
+ * 获取模型分类（支持自定义配置的异步版本）
+ * @param {function} t - 翻译函数
+ * @returns {Promise<object>} - 模型分类对象
+ */
+export async function getModelCategoriesWithCustom(t) {
+  // 先获取默认分类
+  const defaultCategories = getModelCategories(t);
+
+  try {
+    // 获取自定义配置
+    const customConfig = await getCustomModelConfig();
+
+    if (!customConfig.enabled || !customConfig.vendorInfo) {
+      return defaultCategories;
+    }
+
+    // 创建自定义分类
+    const customCategories = { ...defaultCategories };
+
+    // 添加自定义厂商分类
+    for (const [vendorKey, vendorInfo] of Object.entries(customConfig.vendorInfo)) {
+      if (vendorInfo.name) {
+        customCategories[vendorKey] = {
+          label: vendorInfo.name,
+          icon: vendorInfo.icon ? <img key={`category-icon-${vendorKey}`} src={vendorInfo.icon} alt={vendorInfo.name} style={{ width: 16, height: 16 }} /> : null,
+          filter: (model) => {
+            // 检查模型是否属于这个自定义厂商组
+            const modelInfo = customConfig.modelInfo[model.model_name];
+            return modelInfo && modelInfo.group === vendorKey;
+          },
+          sort: parseInt(vendorInfo.sort) || 0,
+          desc: vendorInfo.desc,
+          notice: vendorInfo.notice,
+        };
+      }
+    }
+
+    return customCategories;
+  } catch (error) {
+    console.error('获取自定义模型分类失败:', error);
+    return defaultCategories;
+  }
+}
+
+/**
  * 根据渠道类型返回对应的厂商图标
  * @param {number} channelType - 渠道类型值
  * @returns {JSX.Element|null} - 对应的厂商图标组件
@@ -546,6 +592,71 @@ export function renderModelTag(modelName, options = {}) {
     if (key !== 'all' && category.filter({ model_name: modelName })) {
       icon = category.icon;
       break;
+    }
+  }
+
+  return (
+    <Tag
+      color={color || stringToColor(modelName)}
+      prefixIcon={icon}
+      suffixIcon={suffixIcon}
+      size={size}
+      shape={shape}
+      onClick={onClick}
+    >
+      {modelName}
+    </Tag>
+  );
+}
+
+// 渲染带有模型图标的标签（支持自定义配置的异步版本）
+export async function renderModelTagWithCustom(modelName, options = {}) {
+  const {
+    color,
+    size = 'large',
+    shape = 'circle',
+    onClick,
+    suffixIcon,
+  } = options;
+
+  let icon = null;
+
+  try {
+    // 先尝试获取自定义配置
+    const customConfig = await getCustomModelConfig();
+
+    if (customConfig.enabled && customConfig.modelInfo[modelName]) {
+      const modelInfo = customConfig.modelInfo[modelName];
+
+      // 使用自定义图标
+      if (modelInfo.icon) {
+        icon = <img key={`model-icon-${modelName}`} src={modelInfo.icon} alt={modelName} style={{ width: 16, height: 16 }} />;
+      } else if (modelInfo.group && customConfig.vendorInfo[modelInfo.group]?.icon) {
+        // 使用厂商图标
+        const vendorIcon = customConfig.vendorInfo[modelInfo.group].icon;
+        icon = <img key={`vendor-icon-${modelName}`} src={vendorIcon} alt={modelName} style={{ width: 16, height: 16 }} />;
+      }
+    }
+
+    // 如果没有自定义图标，使用默认逻辑
+    if (!icon) {
+      const categories = getModelCategories(i18next.t);
+      for (const [key, category] of Object.entries(categories)) {
+        if (key !== 'all' && category.filter({ model_name: modelName })) {
+          icon = category.icon;
+          break;
+        }
+      }
+    }
+  } catch (error) {
+    console.error('获取自定义模型图标失败:', error);
+    // 降级到默认逻辑
+    const categories = getModelCategories(i18next.t);
+    for (const [key, category] of Object.entries(categories)) {
+      if (key !== 'all' && category.filter({ model_name: modelName })) {
+        icon = category.icon;
+        break;
+      }
     }
   }
 

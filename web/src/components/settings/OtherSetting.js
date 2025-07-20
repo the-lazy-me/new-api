@@ -147,7 +147,7 @@ const OtherSetting = () => {
       }));
     }
   };
-  // 个性化设置 - 关于
+  // 个性化设置 - 关于（更新日志）
   const submitAbout = async () => {
     try {
       setLoadingInput((loadingInput) => ({ ...loadingInput, About: true }));
@@ -382,9 +382,9 @@ const OtherSetting = () => {
                 {t('设置首页内容')}
               </Button>
               <Form.TextArea
-                label={t('关于')}
+                label={t('更新日志')}
                 placeholder={t(
-                  '在此输入新的关于内容，支持 Markdown & HTML 代码 & JSON Timeline。如果输入的是一个链接，则会使用该链接作为 iframe 的 src 属性，这允许你设置任意网页作为关于页面',
+                  '在此输入新的关于内容，支持 Markdown & HTML 代码 & JSON Timeline。如果输入的是一个链接，则会使用该链接作为 iframe 的 src 属性，这允许你设置任意网页作为关于页面，JSON Timeline 示例：[ { "date": "2025.05.24", "type": "hot", "title": "启航 AI 服务全面升级", "details": [ "全部模型大幅降价，最大降幅 76%！", "限时充值活动：5.24-6.19 每充值 100 元，即可获得 10 元额外奖励", "服务性能全面提升" ] } ]',
                 )}
                 field={'About'}
                 onChange={handleInputChange}

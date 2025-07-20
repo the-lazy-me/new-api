@@ -1,24 +1,25 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"one-api/common"
-	"one-api/constant"
 	"one-api/setting/ratio_setting"
 	"one-api/types"
+	"strings"
 	"sync"
 	"time"
 )
 
 type Pricing struct {
-	ModelName              string                  `json:"model_name"`
-	QuotaType              int                     `json:"quota_type"`
-	ModelRatio             float64                 `json:"model_ratio"`
-	ModelPrice             float64                 `json:"model_price"`
-	OwnerBy                string                  `json:"owner_by"`
-	CompletionRatio        float64                 `json:"completion_ratio"`
-	EnableGroup            []string                `json:"enable_groups"`
-	SupportedEndpointTypes []constant.EndpointType `json:"supported_endpoint_types"`
+	ModelName       string   `json:"model_name"`
+	QuotaType       int      `json:"quota_type"`
+	ModelRatio      float64  `json:"model_ratio"`
+	ModelPrice      float64  `json:"model_price"`
+	OwnerBy         string   `json:"owner_by"`
+	CompletionRatio float64  `json:"completion_ratio"`
+	EnableGroup     []string `json:"enable_groups"`
+	Tags            []string `json:"tags"`
 }
 
 var (
@@ -27,35 +28,76 @@ var (
 	updatePricingLock  sync.Mutex
 )
 
-var (
-	modelSupportEndpointTypes = make(map[string][]constant.EndpointType)
-	modelSupportEndpointsLock = sync.RWMutex{}
-)
-
 func GetPricing() []Pricing {
 	if time.Since(lastGetPricingTime) > time.Minute*1 || len(pricingMap) == 0 {
 		updatePricingLock.Lock()
 		defer updatePricingLock.Unlock()
 		// Double check after acquiring the lock
 		if time.Since(lastGetPricingTime) > time.Minute*1 || len(pricingMap) == 0 {
-			modelSupportEndpointsLock.Lock()
-			defer modelSupportEndpointsLock.Unlock()
 			updatePricing()
 		}
 	}
 	return pricingMap
 }
 
-func GetModelSupportEndpointTypes(model string) []constant.EndpointType {
-	if model == "" {
-		return make([]constant.EndpointType, 0)
+// GetCustomModelTags 获取模型的自定义标签
+func GetCustomModelTags(modelName string) []string {
+	// 检查自定义模型配置是否启用
+	common.OptionMapRWMutex.RLock()
+	enabled, ok := common.OptionMap["CustomModelConfigEnabled"]
+	if !ok || enabled != "true" {
+		common.OptionMapRWMutex.RUnlock()
+		return nil
 	}
-	modelSupportEndpointsLock.RLock()
-	defer modelSupportEndpointsLock.RUnlock()
-	if endpoints, ok := modelSupportEndpointTypes[model]; ok {
-		return endpoints
+
+	// 获取自定义模型信息
+	modelInfoStr, ok := common.OptionMap["CustomModelInfo"]
+	common.OptionMapRWMutex.RUnlock()
+
+	if !ok || modelInfoStr == "" || modelInfoStr == "{}" {
+		return nil
 	}
-	return make([]constant.EndpointType, 0)
+
+	// 解析 JSON
+	var modelInfo map[string]interface{}
+	if err := json.Unmarshal([]byte(modelInfoStr), &modelInfo); err != nil {
+		return nil
+	}
+
+	// 获取指定模型的信息
+	modelData, ok := modelInfo[modelName]
+	if !ok {
+		return nil
+	}
+
+	// 转换为 map
+	modelMap, ok := modelData.(map[string]interface{})
+	if !ok {
+		return nil
+	}
+
+	// 获取 tags 字段
+	tagsInterface, ok := modelMap["tags"]
+	if !ok {
+		return nil
+	}
+
+	tagsStr, ok := tagsInterface.(string)
+	if !ok {
+		return nil
+	}
+
+	// 按 | 分割标签并去除空白
+	tags := strings.Split(tagsStr, "|")
+	result := make([]string, 0, len(tags))
+	for _, tag := range tags {
+		tag = strings.TrimSpace(tag)
+		if tag != "" {
+			result = append(result, tag)
+		}
+	}
+
+	return result
 }
 
 func updatePricing() {
@@ -76,40 +118,15 @@ func updatePricing() {
 		groups.Add(ability.Group)
 	}
 
-	//这里使用切片而不是Set，因为一个模型可能支持多个端点类型，并且第一个端点是优先使用端点
-	modelSupportEndpointsStr := make(map[string][]string)
-
-	for _, ability := range enableAbilities {
-		endpoints, ok := modelSupportEndpointsStr[ability.Model]
-		if !ok {
-			endpoints = make([]string, 0)
-			modelSupportEndpointsStr[ability.Model] = endpoints
-		}
-		channelTypes := common.GetEndpointTypesByChannelType(ability.ChannelType, ability.Model)
-		for _, channelType := range channelTypes {
-			if !common.StringsContains(endpoints, string(channelType)) {
-				endpoints = append(endpoints, string(channelType))
-			}
-		}
-		modelSupportEndpointsStr[ability.Model] = endpoints
-	}
-
-	modelSupportEndpointTypes = make(map[string][]constant.EndpointType)
-	for model, endpoints := range modelSupportEndpointsStr {
-		supportedEndpoints := make([]constant.EndpointType, 0)
-		for _, endpointStr := range endpoints {
-			endpointType := constant.EndpointType(endpointStr)
-			supportedEndpoints = append(supportedEndpoints, endpointType)
-		}
-		modelSupportEndpointTypes[model] = supportedEndpoints
-	}
-
 	pricingMap = make([]Pricing, 0)
 	for model, groups := range modelGroupsMap {
+		// 只使用自定义模型标签
+		tags := GetCustomModelTags(model)
+
 		pricing := Pricing{
-			ModelName:              model,
-			EnableGroup:            groups.Items(),
-			SupportedEndpointTypes: modelSupportEndpointTypes[model],
+			ModelName:   model,
+			EnableGroup: groups.Items(),
+			Tags:        tags,
 		}
 		modelPrice, findPrice := ratio_setting.GetModelPrice(model, false)
 		if findPrice {

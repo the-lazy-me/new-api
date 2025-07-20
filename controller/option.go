@@ -157,6 +157,32 @@ func UpdateOption(c *gin.Context) {
 			})
 			return
 		}
+	case "CustomModelInfo":
+		// 验证模型信息 JSON 格式
+		if option.Value != "" && option.Value != "{}" {
+			var modelInfo map[string]interface{}
+			err = json.Unmarshal([]byte(option.Value), &modelInfo)
+			if err != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"success": false,
+					"message": "模型信息 JSON 格式无效: " + err.Error(),
+				})
+				return
+			}
+		}
+	case "CustomModelVendorInfo":
+		// 验证模型厂商信息 JSON 格式
+		if option.Value != "" && option.Value != "{}" {
+			var vendorInfo map[string]interface{}
+			err = json.Unmarshal([]byte(option.Value), &vendorInfo)
+			if err != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"success": false,
+					"message": "模型厂商信息 JSON 格式无效: " + err.Error(),
+				})
+				return
+			}
+		}
 	}
 	err = model.UpdateOption(option.Key, option.Value)
 	if err != nil {

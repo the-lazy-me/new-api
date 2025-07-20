@@ -22,6 +22,9 @@ const ModelSetting = () => {
     'general_setting.ping_interval_seconds': 60,
     'gemini.thinking_adapter_enabled': false,
     'gemini.thinking_adapter_budget_tokens_percentage': 0.6,
+    'CustomModelConfigEnabled': false,
+    'CustomModelInfo': '{}',
+    'CustomModelVendorInfo': '{}',
   });
 
   let [loading, setLoading] = useState(false);
@@ -37,10 +40,17 @@ const ModelSetting = () => {
           item.key === 'gemini.version_settings' ||
           item.key === 'claude.model_headers_settings' ||
           item.key === 'claude.default_max_tokens' ||
-          item.key === 'gemini.supported_imagine_models'
+          item.key === 'gemini.supported_imagine_models' ||
+          item.key === 'CustomModelInfo' ||
+          item.key === 'CustomModelVendorInfo'
         ) {
-          if (item.value !== '') {
-            item.value = JSON.stringify(JSON.parse(item.value), null, 2);
+          if (item.value !== '' && item.value !== '{}') {
+            try {
+              item.value = JSON.stringify(JSON.parse(item.value), null, 2);
+            } catch (e) {
+              console.error(`解析 ${item.key} JSON 失败:`, e);
+              // 保持原值
+            }
           }
         }
         if (item.key.endsWith('Enabled') || item.key.endsWith('enabled')) {
