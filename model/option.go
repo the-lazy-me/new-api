@@ -135,6 +135,11 @@ func InitOptionMap() {
 	common.OptionMap["CustomModelInfo"] = "{}"
 	common.OptionMap["CustomModelVendorInfo"] = "{}"
 
+	// 邮件模板配置选项
+	common.OptionMap["EmailTemplateEnabled"] = "false"
+	common.OptionMap["EmailTemplate_Verification"] = getDefaultVerificationEmailTemplate()
+	common.OptionMap["EmailTemplate_PasswordReset"] = getDefaultPasswordResetEmailTemplate()
+
 	// 自动添加所有注册的模型配置
 	modelConfigs := config.GlobalConfig.ExportAllConfigs()
 	for k, v := range modelConfigs {
@@ -278,6 +283,8 @@ func updateOptionMap(key string, value string) (err error) {
 			ratio_setting.SetExposeRatioEnabled(boolValue)
 		case "CustomModelConfigEnabled":
 			// 自定义模型配置启用状态，暂时只存储在 OptionMap 中
+		case "EmailTemplateEnabled":
+			// 邮件模板启用状态，暂时只存储在 OptionMap 中
 		}
 	}
 	switch key {
@@ -431,4 +438,105 @@ func handleConfigUpdate(key, value string) bool {
 	config.UpdateConfigFromMap(cfg, configMap)
 
 	return true // 已处理
+}
+
+// getDefaultVerificationEmailTemplate 返回默认的验证码邮件模板
+func getDefaultVerificationEmailTemplate() string {
+	return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱验证</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        .content { padding: 40px 30px; }
+        .verification-code { background-color: #f8f9fa; border: 2px dashed #667eea; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
+        .code { font-size: 32px; font-weight: bold; color: #667eea; letter-spacing: 4px; }
+        .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+        .btn { display: inline-block; padding: 12px 24px; background-color: #667eea; color: white; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{site_name}}</h1>
+            <p>邮箱验证</p>
+        </div>
+        <div class="content">
+            <h2>您好！</h2>
+            <p>您正在进行 <strong>{{site_name}}</strong> 的邮箱验证。</p>
+            <div class="verification-code">
+                <p>您的验证码为：</p>
+                <div class="code">{{verification_code}}</div>
+            </div>
+            <p><strong>重要提醒：</strong></p>
+            <ul>
+                <li>验证码 <strong>{{valid_minutes}}</strong> 分钟内有效</li>
+                <li>请勿将验证码告诉他人</li>
+                <li>如果不是本人操作，请忽略此邮件</li>
+            </ul>
+        </div>
+        <div class="footer">
+            <p>此邮件由系统自动发送，请勿回复</p>
+            <p>&copy; {{site_name}} - 专业的AI服务平台</p>
+        </div>
+    </div>
+</body>
+</html>`
+}
+
+// getDefaultPasswordResetEmailTemplate 返回默认的密码重置邮件模板
+func getDefaultPasswordResetEmailTemplate() string {
+	return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>密码重置</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .header { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; padding: 30px; text-align: center; }
+        .content { padding: 40px 30px; }
+        .reset-section { background-color: #fff5f5; border-left: 4px solid #ff6b6b; padding: 20px; margin: 20px 0; }
+        .btn { display: inline-block; padding: 15px 30px; background-color: #ff6b6b; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: bold; }
+        .btn:hover { background-color: #ee5a24; }
+        .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+        .link-box { background-color: #f8f9fa; padding: 15px; border-radius: 6px; word-break: break-all; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{site_name}}</h1>
+            <p>密码重置</p>
+        </div>
+        <div class="content">
+            <h2>您好！</h2>
+            <p>您正在进行 <strong>{{site_name}}</strong> 的密码重置操作。</p>
+            <div class="reset-section">
+                <h3>🔐 重置您的密码</h3>
+                <p>点击下面的按钮来重置您的密码：</p>
+                <a href="{{reset_link}}" class="btn">立即重置密码</a>
+                <p>如果按钮无法点击，请复制以下链接到浏览器中打开：</p>
+                <div class="link-box">{{reset_link}}</div>
+            </div>
+            <p><strong>安全提醒：</strong></p>
+            <ul>
+                <li>重置链接 <strong>{{valid_minutes}}</strong> 分钟内有效</li>
+                <li>为了您的账户安全，请勿将此链接分享给他人</li>
+                <li>如果不是本人操作，请立即联系客服</li>
+                <li>重置密码后，建议您启用两步验证</li>
+            </ul>
+        </div>
+        <div class="footer">
+            <p>此邮件由系统自动发送，请勿回复</p>
+            <p>&copy; {{site_name}} - 专业的AI服务平台</p>
+        </div>
+    </div>
+</body>
+</html>`
 }

@@ -43,19 +43,25 @@ func Distribute() func(c *gin.Context) {
 		userGroup := common.GetContextKeyString(c, constant.ContextKeyUserGroup)
 		tokenGroup := common.GetContextKeyString(c, constant.ContextKeyTokenGroup)
 		if tokenGroup != "" {
+			// 统一自动分组判断逻辑：tokenGroup为"auto"或者（tokenGroup为空且启用了默认自动分组）
+			isAutoGroup := tokenGroup == "auto"
+
 			// check common.UserUsableGroups[userGroup]
-			if _, ok := setting.GetUserUsableGroups(userGroup)[tokenGroup]; !ok {
+			if _, ok := setting.GetUserUsableGroups(userGroup)[tokenGroup]; !ok && !isAutoGroup {
 				abortWithOpenAiMessage(c, http.StatusForbidden, fmt.Sprintf("令牌分组 %s 已被禁用", tokenGroup))
 				return
 			}
 			// check group in common.GroupRatio
 			if !ratio_setting.ContainsGroupRatio(tokenGroup) {
-				if tokenGroup != "auto" {
+				if !isAutoGroup {
 					abortWithOpenAiMessage(c, http.StatusForbidden, fmt.Sprintf("分组 %s 已被弃用", tokenGroup))
 					return
 				}
 			}
 			userGroup = tokenGroup
+		} else if setting.DefaultUseAutoGroup {
+			// 当tokenGroup为空且启用了默认自动分组时，将userGroup设置为空字符串以触发自动分组逻辑
+			userGroup = ""
 		}
 		common.SetContextKey(c, constant.ContextKeyUsingGroup, userGroup)
 		if ok {

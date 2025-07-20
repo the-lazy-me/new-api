@@ -684,9 +684,21 @@ export function renderText(text, limit) {
 /**
  * Render group tags based on the input group string
  * @param {string} group - The input group string
+ * @param {boolean} defaultUseAutoGroup - Whether default auto group is enabled
  * @returns {JSX.Element} - The rendered group tags
  */
-export function renderGroup(group) {
+export function renderGroup(group, defaultUseAutoGroup = false) {
+  // 统一自动分组显示逻辑：group为"auto"或者（group为空且启用了默认自动分组）
+  const isAutoGroup = group === 'auto' || (group === '' && defaultUseAutoGroup);
+
+  if (isAutoGroup) {
+    return (
+      <Tag size='large' key='auto' color='blue' shape='circle'>
+        {i18next.t('自动分组')}
+      </Tag>
+    );
+  }
+
   if (group === '') {
     return (
       <Tag size='large' key='default' color='orange' shape='circle'>

@@ -229,7 +229,7 @@ const Home = () => {
               {t('适配众多 AI 大模型')}
             </h2>
             <Text className="sm:text-xl text-semi-color-text-1 max-w-4xl mx-auto !text-semi-color-text-2">
-              {t('覆盖全网各种主流模型，同时提供 ASR（语音识别）、TTS（文本转语音）、绘图等{{systemName}}特供模型，覆盖 90%+ 的场景', { systemName })}
+              {t('覆盖全网各种主流模型，同时提供 ASR（语音识别）、TTS（文本转语音）、绘图等特供模型，覆盖 90%+ 的场景')}
             </Text>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
@@ -307,7 +307,7 @@ const Home = () => {
               {t('一键接入众多应用')}
             </h2>
             <Text className="text-lg sm:text-xl text-semi-color-text-1 max-w-4xl mx-auto !text-semi-color-text-2">
-              {t('支持任何适配 OpenAI 标准的应用，聊天、翻译、生产力等各种应用，一键接入，快速实现"{{systemName}}+X"', { systemName })}
+              {t('支持任何适配 OpenAI 标准的应用，聊天、翻译、生产力等各种应用，一键接入，快速实现')}"{systemName} + X"
             </Text>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
@@ -467,7 +467,7 @@ const Home = () => {
       {
         step: 1,
         title: t('注册账户'),
-        description: t('创建您的{{systemName}}账户，开启AI之旅的第一步', { systemName }),
+        description: t('创建您的账户，开启AI之旅的第一步'),
         icon: <IconUser size="extra-large" />,
         url: `${getServerAddress()}/register`,
         color: '#3B82F6'
@@ -529,7 +529,7 @@ const Home = () => {
               {t('接入步骤')}
             </h2>
             <Text className="text-lg sm:text-xl text-semi-color-text-1">
-              {t('简单几步，快速接入{{systemName}}服务', { systemName })}
+              {t('简单几步，快速接入')} {systemName} {t('服务')}
             </Text>
           </div>
           <div className="relative">

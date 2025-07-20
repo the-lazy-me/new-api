@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   API,
   copy,
@@ -9,6 +9,7 @@ import {
   renderQuota,
   getQuotaPerUnit
 } from '../../helpers';
+import { StatusContext } from '../../context/Status';
 import { ITEMS_PER_PAGE } from '../../constants';
 import {
   Button,
@@ -48,6 +49,7 @@ function renderTimestamp(timestamp) {
 
 const TokensTable = () => {
   const { t } = useTranslation();
+  const [statusState] = useContext(StatusContext);
 
   const renderStatus = (status, model_limits_enabled = false) => {
     switch (status) {
@@ -106,7 +108,7 @@ const TokensTable = () => {
           <div>
             <Space>
               {renderStatus(text, record.model_limits_enabled)}
-              {renderGroup(record.group)}
+              {renderGroup(record.group, statusState?.status?.default_use_auto_group)}
             </Space>
           </div>
         );

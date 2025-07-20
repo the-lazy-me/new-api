@@ -149,7 +149,11 @@ func ListModels(c *gin.Context) {
 			group = tokenGroup
 		}
 		var models []string
-		if tokenGroup == "auto" {
+
+		// 统一自动分组判断逻辑：tokenGroup为"auto"或者（tokenGroup为空且启用了默认自动分组）
+		shouldUseAutoGroup := tokenGroup == "auto" || (tokenGroup == "" && setting.DefaultUseAutoGroup)
+
+		if shouldUseAutoGroup {
 			for _, autoGroup := range setting.AutoGroups {
 				groupModels := model.GetGroupEnabledModels(autoGroup)
 				for _, g := range groupModels {

@@ -8,6 +8,7 @@ import {
   Modal,
   Space,
   Card,
+  Tooltip,
 } from '@douyinfe/semi-ui';
 import { API, showError, showSuccess, timestamp2string } from '../../helpers';
 import { marked } from 'marked';
@@ -25,6 +26,9 @@ const OtherSetting = () => {
     About: '',
     HomePageContent: '',
     TopUpNotice: '',
+    EmailTemplateEnabled: '',
+    EmailTemplate_Verification: '',
+    EmailTemplate_PasswordReset: '',
   });
   let [loading, setLoading] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -33,6 +37,16 @@ const OtherSetting = () => {
     tag_name: '',
     content: '',
   });
+  const [templateVariables, setTemplateVariables] = useState({
+    '{{username}}': '用户名',
+    '{{verification_code}}': '验证码',
+    '{{reset_link}}': '重置链接',
+    '{{site_name}}': '网站名称',
+    '{{valid_minutes}}': '有效时间（分钟）'
+  });
+  const [showTemplatePreview, setShowTemplatePreview] = useState(false);
+  const [previewContent, setPreviewContent] = useState('');
+  const [currentTemplateType, setCurrentTemplateType] = useState('');
 
   const updateOption = async (key, value) => {
     setLoading(true);
@@ -42,7 +56,12 @@ const OtherSetting = () => {
     });
     const { success, message } = res.data;
     if (success) {
-      setInputs((inputs) => ({ ...inputs, [key]: value }));
+      // 对于邮件模板开关，需要转换为布尔值
+      let localValue = value;
+      if (key === 'EmailTemplateEnabled') {
+        localValue = value === 'true';
+      }
+      setInputs((inputs) => ({ ...inputs, [key]: localValue }));
     } else {
       showError(message);
     }
@@ -58,10 +77,18 @@ const OtherSetting = () => {
     Footer: false,
     CheckUpdate: false,
     TopUpNotice: false,
+    EmailTemplateEnabled: false,
+    EmailTemplate_Verification: false,
+    EmailTemplate_PasswordReset: false,
   });
   const handleInputChange = async (value, e) => {
     const name = e.target.id;
     setInputs((inputs) => ({ ...inputs, [name]: value }));
+  };
+
+  // 判断邮件模板是否启用
+  const isEmailTemplateEnabled = () => {
+    return inputs.EmailTemplateEnabled === true;
   };
 
   // 通用设置
@@ -95,6 +122,8 @@ const OtherSetting = () => {
   };
   // 个性化设置
   const formAPIPersonalization = useRef();
+  // 邮件模板设置
+  const formAPIEmailTemplate = useRef();
   //  个性化设置 - SystemName
   const submitSystemName = async () => {
     try {
@@ -174,6 +203,102 @@ const OtherSetting = () => {
     }
   };
 
+  // 邮件模板设置 - 启用状态
+  const submitEmailTemplateEnabled = async () => {
+    try {
+      setLoadingInput((loadingInput) => ({
+        ...loadingInput,
+        EmailTemplateEnabled: true,
+      }));
+      // 将布尔值转换为字符串发送给后端
+      const value = inputs.EmailTemplateEnabled ? 'true' : 'false';
+      await updateOption('EmailTemplateEnabled', value);
+      showSuccess(t('邮件模板设置已更新'));
+    } catch (error) {
+      console.error(t('邮件模板设置更新失败'), error);
+      showError(t('邮件模板设置更新失败'));
+    } finally {
+      setLoadingInput((loadingInput) => ({
+        ...loadingInput,
+        EmailTemplateEnabled: false,
+      }));
+    }
+  };
+
+  // 邮件模板设置 - 验证码邮件模板
+  const submitVerificationTemplate = async () => {
+    try {
+      setLoadingInput((loadingInput) => ({
+        ...loadingInput,
+        EmailTemplate_Verification: true,
+      }));
+      await updateOption('EmailTemplate_Verification', inputs.EmailTemplate_Verification);
+      showSuccess(t('验证码邮件模板已更新'));
+    } catch (error) {
+      console.error(t('验证码邮件模板更新失败'), error);
+      showError(t('验证码邮件模板更新失败'));
+    } finally {
+      setLoadingInput((loadingInput) => ({
+        ...loadingInput,
+        EmailTemplate_Verification: false,
+      }));
+    }
+  };
+
+  // 邮件模板设置 - 密码重置邮件模板
+  const submitPasswordResetTemplate = async () => {
+    try {
+      setLoadingInput((loadingInput) => ({
+        ...loadingInput,
+        EmailTemplate_PasswordReset: true,
+      }));
+      await updateOption('EmailTemplate_PasswordReset', inputs.EmailTemplate_PasswordReset);
+      showSuccess(t('密码重置邮件模板已更新'));
+    } catch (error) {
+      console.error(t('密码重置邮件模板更新失败'), error);
+      showError(t('密码重置邮件模板更新失败'));
+    } finally {
+      setLoadingInput((loadingInput) => ({
+        ...loadingInput,
+        EmailTemplate_PasswordReset: false,
+      }));
+    }
+  };
+
+  // 获取模板变量
+  const getTemplateVariables = async () => {
+    try {
+      const res = await API.get('/api/email_template_variables');
+      const { success, data } = res.data;
+      if (success) {
+        setTemplateVariables(data);
+      }
+    } catch (error) {
+      console.error('获取模板变量失败', error);
+    }
+  };
+
+  // 预览模板
+  const previewTemplate = (templateType) => {
+    const templateContent = inputs[`EmailTemplate_${templateType}`];
+    if (!templateContent) {
+      showError(t('模板内容为空'));
+      return;
+    }
+
+    // 使用示例数据替换变量
+    let preview = templateContent;
+    preview = preview.replace(/\{\{username\}\}/g, '示例用户');
+    preview = preview.replace(/\{\{verification_code\}\}/g, '123456');
+    preview = preview.replace(/\{\{reset_link\}\}/g, 'https://example.com/reset?token=example');
+    preview = preview.replace(/\{\{site_name\}\}/g, inputs.SystemName || 'AI服务平台');
+    preview = preview.replace(/\{\{valid_minutes\}\}/g, '15');
+
+    setPreviewContent(preview);
+    setCurrentTemplateType(templateType);
+    setShowTemplatePreview(true);
+  };
+
   const checkUpdate = async () => {
     try {
       setLoadingInput((loadingInput) => ({
@@ -234,9 +359,16 @@ const OtherSetting = () => {
           newInputs[item.key] = item.value;
         }
       });
+      // 确保邮件模板开关有默认值
+      if (!newInputs.hasOwnProperty('EmailTemplateEnabled')) {
+        newInputs.EmailTemplateEnabled = 'false';
+      }
+      // 为Switch组件转换布尔值
+      newInputs.EmailTemplateEnabled = newInputs.EmailTemplateEnabled === 'true';
       setInputs(newInputs);
       formAPISettingGeneral.current.setValues(newInputs);
       formAPIPersonalization.current.setValues(newInputs);
+      formAPIEmailTemplate.current.setValues(newInputs);
     } else {
       showError(message);
     }
@@ -244,6 +376,7 @@ const OtherSetting = () => {
 
   useEffect(() => {
     getOptions();
+    getTemplateVariables();
   }, []);
 
   // Function to open GitHub release page
@@ -418,6 +551,116 @@ const OtherSetting = () => {
             </Form.Section>
           </Card>
         </Form>
+        {/* 邮件模板设置 */}
+        <Form
+          values={inputs}
+          getFormApi={(formAPI) => (formAPIEmailTemplate.current = formAPI)}
+        >
+          <Card>
+            <Form.Section text={t('邮件模板设置')}>
+              <Form.Switch
+                label={t('启用邮件模板')}
+                field={'EmailTemplateEnabled'}
+                onChange={(value) => {
+                  // 更新inputs状态，保存为字符串以便后端处理
+                  setInputs((inputs) => ({ ...inputs, EmailTemplateEnabled: value }));
+                }}
+              />
+              <Button
+                onClick={submitEmailTemplateEnabled}
+                loading={loadingInput['EmailTemplateEnabled']}
+              >
+                {t('保存设置')}
+              </Button>
+
+              <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                <h4>{t('可用的模板变量：')}</h4>
+                <p style={{ fontSize: '14px', color: '#6c757d', marginBottom: '10px' }}>
+                  {t('在邮件模板中使用以下变量，系统会自动替换为实际内容。点击变量可查看详细说明。')}
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                  {Object.entries(templateVariables).map(([variable, description]) => (
+                    <Tooltip key={variable} content={`${variable}: ${description}`} position="top">
+                      <span
+                        style={{
+                          padding: '6px 10px',
+                          backgroundColor: '#e9ecef',
+                          borderRadius: '4px',
+                          fontSize: '12px',
+                          fontFamily: 'monospace',
+                          cursor: 'help',
+                          border: '1px solid #dee2e6',
+                          display: 'inline-block'
+                        }}
+                      >
+                        {variable}
+                      </span>
+                    </Tooltip>
+                  ))}
+                </div>
+                <div style={{ marginTop: '10px', fontSize: '12px', color: '#6c757d' }}>
+                  <strong>{t('使用示例：')}</strong>
+                  <br />
+                  {t('验证码邮件：')} <code style={{ backgroundColor: '#e9ecef', padding: '2px 4px', borderRadius: '3px' }}>您的验证码为：{'{{verification_code}}'}</code>
+                  <br />
+                  {t('密码重置：')} <code style={{ backgroundColor: '#e9ecef', padding: '2px 4px', borderRadius: '3px' }}>点击 &lt;a href="{'{{reset_link}}'}"&gt;此处&lt;/a&gt; 重置密码</code>
+                </div>
+              </div>
+
+              <Form.TextArea
+                label={t('注册验证码邮件模板')}
+                placeholder={t('在此输入验证码邮件的HTML模板，支持上述模板变量')}
+                field={'EmailTemplate_Verification'}
+                onChange={handleInputChange}
+                style={{ fontFamily: 'JetBrains Mono, Consolas' }}
+                autosize={{ minRows: 10, maxRows: 20 }}
+                disabled={!isEmailTemplateEnabled()}
+              />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <Button
+                  onClick={submitVerificationTemplate}
+                  loading={loadingInput['EmailTemplate_Verification']}
+                  disabled={!isEmailTemplateEnabled()}
+                >
+                  {t('保存验证码模板')}
+                </Button>
+                <Button
+                  type="tertiary"
+                  onClick={() => previewTemplate('Verification')}
+                  disabled={!isEmailTemplateEnabled()}
+                >
+                  {t('预览模板')}
+                </Button>
+              </div>
+
+              <Form.TextArea
+                label={t('密码重置邮件模板')}
+                placeholder={t('在此输入密码重置邮件的HTML模板，支持上述模板变量')}
+                field={'EmailTemplate_PasswordReset'}
+                onChange={handleInputChange}
+                style={{ fontFamily: 'JetBrains Mono, Consolas' }}
+                autosize={{ minRows: 10, maxRows: 20 }}
+                disabled={!isEmailTemplateEnabled()}
+              />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <Button
+                  onClick={submitPasswordResetTemplate}
+                  loading={loadingInput['EmailTemplate_PasswordReset']}
+                  disabled={!isEmailTemplateEnabled()}
+                >
+                  {t('保存重置模板')}
+                </Button>
+                <Button
+                  type="tertiary"
+                  onClick={() => previewTemplate('PasswordReset')}
+                  disabled={!isEmailTemplateEnabled()}
+                >
+                  {t('预览模板')}
+                </Button>
+              </div>
+            </Form.Section>
+          </Card>
+        </Form>
       </Col>
       <Modal
         title={t('新版本') + '：' + updateData.tag_name}
@@ -437,6 +680,31 @@ const OtherSetting = () => {
         ]}
       >
         <div dangerouslySetInnerHTML={{ __html: updateData.content }}></div>
+      </Modal>
+      <Modal
+        title={t('邮件模板预览') + ' - ' + (currentTemplateType === 'Verification' ? t('验证码邮件') : t('密码重置邮件'))}
+        visible={showTemplatePreview}
+        onCancel={() => setShowTemplatePreview(false)}
+        width={800}
+        footer={[
+          <Button
+            key='close'
+            onClick={() => setShowTemplatePreview(false)}
+          >
+            {t('关闭')}
+          </Button>,
+        ]}
+      >
+        <div
+          style={{
+            border: '1px solid #e8e8e8',
+            borderRadius: '6px',
+            padding: '10px',
+            maxHeight: '500px',
+            overflow: 'auto'
+          }}
+          dangerouslySetInnerHTML={{ __html: previewContent }}
+        ></div>
       </Modal>
     </Row>
   );

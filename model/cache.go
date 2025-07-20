@@ -82,7 +82,11 @@ func CacheGetRandomSatisfiedChannel(c *gin.Context, group string, model string, 
 	var channel *Channel
 	var err error
 	selectGroup := group
-	if group == "auto" {
+
+	// 统一自动分组判断逻辑：group为"auto"或者（group为空且启用了默认自动分组）
+	shouldUseAutoGroup := group == "auto" || (group == "" && setting.DefaultUseAutoGroup)
+
+	if shouldUseAutoGroup {
 		if len(setting.AutoGroups) == 0 {
 			return nil, selectGroup, errors.New("auto groups is not enabled")
 		}

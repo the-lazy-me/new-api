@@ -106,9 +106,11 @@ const EditToken = (props) => {
         }
       }
       setGroups(localGroupOptions);
-      if (statusState?.status?.default_use_auto_group && formApiRef.current) {
-        formApiRef.current.setValue('group', 'auto');
-      }
+      // 注释掉自动设置group为'auto'的逻辑，让用户自己选择
+      // 当启用默认自动分组时，如果用户不选择任何分组（留空），系统会自动使用自动分组功能
+      // if (statusState?.status?.default_use_auto_group && formApiRef.current) {
+      //   formApiRef.current.setValue('group', 'auto');
+      // }
     } else {
       showError(t(message));
     }
@@ -325,7 +327,9 @@ const EditToken = (props) => {
                       <Form.Select
                         field='group'
                         label={t('令牌分组')}
-                        placeholder={t('令牌分组，默认为用户的分组')}
+                        placeholder={statusState?.status?.default_use_auto_group ?
+                          t('留空将使用自动分组，或选择特定分组') :
+                          t('令牌分组，默认为用户的分组')}
                         optionList={groups}
                         renderOptionItem={renderGroupOption}
                         showClear
