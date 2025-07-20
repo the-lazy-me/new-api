@@ -24,6 +24,7 @@ const OtherSetting = () => {
     Footer: '',
     About: '',
     HomePageContent: '',
+    TopUpNotice: '',
   });
   let [loading, setLoading] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -56,6 +57,7 @@ const OtherSetting = () => {
     About: false,
     Footer: false,
     CheckUpdate: false,
+    TopUpNotice: false,
   });
   const handleInputChange = async (value, e) => {
     const name = e.target.id;
@@ -75,6 +77,20 @@ const OtherSetting = () => {
       showError(t('公告更新失败'));
     } finally {
       setLoadingInput((loadingInput) => ({ ...loadingInput, Notice: false }));
+    }
+  };
+
+  // 通用设置 - TopUpNotice
+  const submitTopUpNotice = async () => {
+    try {
+      setLoadingInput((loadingInput) => ({ ...loadingInput, TopUpNotice: true }));
+      await updateOption('TopUpNotice', inputs.TopUpNotice);
+      showSuccess(t('充值公告已更新'));
+    } catch (error) {
+      console.error(t('充值公告更新失败'), error);
+      showError(t('充值公告更新失败'));
+    } finally {
+      setLoadingInput((loadingInput) => ({ ...loadingInput, TopUpNotice: false }));
     }
   };
   // 个性化设置
@@ -304,6 +320,19 @@ const OtherSetting = () => {
               />
               <Button onClick={submitNotice} loading={loadingInput['Notice']}>
                 {t('设置公告')}
+              </Button>
+              <Form.TextArea
+                label={t('充值公告')}
+                placeholder={t(
+                  '在此输入充值公告内容，支持 Markdown & HTML 代码，将显示在充值页面右侧区域',
+                )}
+                field={'TopUpNotice'}
+                onChange={handleInputChange}
+                style={{ fontFamily: 'JetBrains Mono, Consolas' }}
+                autosize={{ minRows: 6, maxRows: 12 }}
+              />
+              <Button onClick={submitTopUpNotice} loading={loadingInput['TopUpNotice']}>
+                {t('设置充值公告')}
               </Button>
             </Form.Section>
           </Card>

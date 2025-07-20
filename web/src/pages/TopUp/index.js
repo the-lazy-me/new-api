@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status/index.js';
 import { useTheme } from '../../context/Theme';
+import TopUpNotice from '../../components/common/TopUpNotice';
 import {
   CreditCard,
   Gift,
@@ -858,8 +859,12 @@ const TopUp = () => {
           </Card>
         </div>
 
-        {/* 右侧邀请信息卡片 */}
-        <div className='lg:col-span-5'>
+        {/* 右侧区域 */}
+        <div className='lg:col-span-5 space-y-4 lg:space-y-6'>
+          {/* 充值公告 */}
+          <TopUpNotice />
+
+          {/* 邀请信息卡片 */}
           <Card
             className='!rounded-2xl'
             shadows='always'
