@@ -384,7 +384,7 @@ const OtherSetting = () => {
               <Form.TextArea
                 label={t('关于')}
                 placeholder={t(
-                  '在此输入新的关于内容，支持 Markdown & HTML 代码。如果输入的是一个链接，则会使用该链接作为 iframe 的 src 属性，这允许你设置任意网页作为关于页面',
+                  '在此输入新的关于内容，支持 Markdown & HTML 代码 & JSON Timeline。如果输入的是一个链接，则会使用该链接作为 iframe 的 src 属性，这允许你设置任意网页作为关于页面',
                 )}
                 field={'About'}
                 onChange={handleInputChange}
