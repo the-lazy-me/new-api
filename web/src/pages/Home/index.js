@@ -216,10 +216,10 @@ const Home = () => {
       { name: t('XAI'), icon: <XAI size={32} />, url: 'https://x.ai ' },
       { name: t('智谱清言'), icon: <Zhipu.Color size={32} />, url: 'https://www.zhipuai.cn ' },
       { name: t('文心一言'), icon: <Wenxin.Color size={32} />, url: 'https://wenxin.baidu.com ' },
-      { name: t('语音转文本'), icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png " alt="ASR" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' },
-      { name: t('文本转语音'), icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png " alt="TTS" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' },
-      { name: t('启航绘图 V1'), icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png " alt="启航绘图V1" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' },
-      { name: t('启航绘图 V2'), icon: <img src="https://img.thelazy.top/AIGC-Station/QHAPI-Logo.png " alt="启航绘图V2" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' }
+      { name: t('语音转文本'), icon: <img src="https://img.thelazy.top/2025/04/09/qhai-asr.png " alt="ASR" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' },
+      { name: t('文本转语音'), icon: <img src="https://img.thelazy.top/2025/04/08/voice.png " alt="TTS" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' },
+      { name: t('启航绘图 V1'), icon: <img src="https://img.thelazy.top/2025/04/10/ai-draw.png " alt="启航绘图V1" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' },
+      { name: t('启航绘图 V2'), icon: <img src="https://img.thelazy.top/2025/04/10/ai-draw.png" alt="启航绘图V2" className="w-8 h-8" />, url: 'https://api.qhaigc.net/pricing ' }
     ];
     return (
       <section id="models-section" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-semi-color-bg-1 border-t border-semi-color-border">
