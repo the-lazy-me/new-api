@@ -192,9 +192,7 @@ const ModelPricing = () => {
     models.forEach(model => {
       if (model.enable_groups && model.enable_groups.length > 0) {
         model.enable_groups.forEach(group => {
-          if (usableGroup[group]) {
-            allGroups.add(group);
-          }
+          allGroups.add(group);
         });
       }
     });
@@ -202,7 +200,7 @@ const ModelPricing = () => {
       text: group,
       value: group
     }));
-  }, [models, usableGroup]);
+  }, [models]);
 
   const columns = useMemo(() => [
     {
@@ -581,6 +579,7 @@ const ModelPricing = () => {
   const ModelTable = useMemo(() => (
     <Card className="!rounded-xl overflow-hidden" bordered={false}>
       <Table
+        key={`table-${models.length}-${Object.keys(groupRatio).length}`}
         columns={columns}
         dataSource={filteredModels}
         loading={loading}
