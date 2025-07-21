@@ -56,11 +56,51 @@ func NotifyUser(userId int, userEmail string, userSetting dto.UserSetting, data 
 }
 
 func sendEmailNotify(userEmail string, data dto.Notify) error {
-	// make email content
+	// 如果是额度预警邮件且启用了邮件模板，使用模板发送
+	if data.Type == dto.NotifyTypeQuotaExceed && common.IsEmailTemplateEnabled() {
+		return sendQuotaWarningEmailWithTemplate(userEmail, data)
+	}
+
+	// 原有逻辑：处理占位符
 	content := data.Content
-	// 处理占位符
 	for _, value := range data.Values {
 		content = strings.Replace(content, dto.ContentValueParam, fmt.Sprintf("%v", value), 1)
 	}
 	return common.SendEmail(data.Title, userEmail, content)
+}
+
+func sendQuotaWarningEmailWithTemplate(userEmail string, data dto.Notify) error {
+	// 解析原有的占位符数据
+	values := data.Values
+	if len(values) < 4 {
+		// 如果数据不足，回退到原有逻辑
+		content := data.Content
+		for _, value := range values {
+			content = strings.Replace(content, dto.ContentValueParam, fmt.Sprintf("%v", value), 1)
+		}
+		return common.SendEmail(data.Title, userEmail, content)
+	}
+
+	// 构建模板数据
+	templateData := common.EmailTemplateData{
+		Username:       userEmail, // 使用邮箱作为用户标识
+		SiteName:       common.SystemName,
+		WarningMessage: fmt.Sprintf("%v", values[0]), // 预警消息
+		RemainingQuota: fmt.Sprintf("%v", values[1]), // 剩余额度
+		TopupLink:      fmt.Sprintf("%v", values[2]), // 充值链接
+		LogoUrl:        common.Logo,
+	}
+
+	// 使用模板发送邮件
+	err := common.SendTemplatedEmail(common.EmailTemplateQuotaWarning, data.Title, userEmail, templateData)
+	if err != nil {
+		// 如果模板发送失败，回退到原有逻辑
+		content := data.Content
+		for _, value := range values {
+			content = strings.Replace(content, dto.ContentValueParam, fmt.Sprintf("%v", value), 1)
+		}
+		return common.SendEmail(data.Title, userEmail, content)
+	}
+
+	return nil
 }

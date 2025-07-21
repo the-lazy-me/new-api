@@ -139,6 +139,7 @@ func InitOptionMap() {
 	common.OptionMap["EmailTemplateEnabled"] = "false"
 	common.OptionMap["EmailTemplate_Verification"] = getDefaultVerificationEmailTemplate()
 	common.OptionMap["EmailTemplate_PasswordReset"] = getDefaultPasswordResetEmailTemplate()
+	common.OptionMap["EmailTemplate_QuotaWarning"] = getDefaultQuotaWarningEmailTemplate()
 
 	// 自动添加所有注册的模型配置
 	modelConfigs := config.GlobalConfig.ExportAllConfigs()
@@ -462,6 +463,7 @@ func getDefaultVerificationEmailTemplate() string {
 <body>
     <div class="container">
         <div class="header">
+            <img src="{{logo_url}}" alt="{{site_name}} Logo" style="max-width: 80px; height: auto; margin-bottom: 10px;">
             <h1>{{site_name}}</h1>
             <p>邮箱验证</p>
         </div>
@@ -511,6 +513,7 @@ func getDefaultPasswordResetEmailTemplate() string {
 <body>
     <div class="container">
         <div class="header">
+            <img src="{{logo_url}}" alt="{{site_name}} Logo" style="max-width: 80px; height: auto; margin-bottom: 10px;">
             <h1>{{site_name}}</h1>
             <p>密码重置</p>
         </div>
@@ -530,6 +533,68 @@ func getDefaultPasswordResetEmailTemplate() string {
                 <li>为了您的账户安全，请勿将此链接分享给他人</li>
                 <li>如果不是本人操作，请立即联系客服</li>
                 <li>重置密码后，建议您启用两步验证</li>
+            </ul>
+        </div>
+        <div class="footer">
+            <p>此邮件由系统自动发送，请勿回复</p>
+            <p>&copy; {{site_name}} - 专业的AI服务平台</p>
+        </div>
+    </div>
+</body>
+</html>`
+}
+
+// getDefaultQuotaWarningEmailTemplate 返回默认的额度预警邮件模板
+func getDefaultQuotaWarningEmailTemplate() string {
+	return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>额度预警</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .header { background: linear-gradient(135deg, #ffa726 0%, #ff7043 100%); color: white; padding: 30px; text-align: center; }
+        .content { padding: 40px 30px; }
+        .warning-section { background-color: #fff3e0; border-left: 4px solid #ffa726; padding: 20px; margin: 20px 0; }
+        .quota-info { background-color: #f8f9fa; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
+        .quota-amount { font-size: 24px; font-weight: bold; color: #ff7043; }
+        .btn { display: inline-block; padding: 15px 30px; background-color: #ffa726; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: bold; }
+        .btn:hover { background-color: #ff7043; }
+        .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+        .link-box { background-color: #f8f9fa; padding: 15px; border-radius: 6px; word-break: break-all; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{{logo_url}}" alt="{{site_name}} Logo" style="max-width: 80px; height: auto; margin-bottom: 10px;">
+            <h1>{{site_name}}</h1>
+            <p>⚠️ 额度预警通知</p>
+        </div>
+        <div class="content">
+            <h2>您好，{{username}}！</h2>
+            <div class="warning-section">
+                <h3>🔔 额度预警提醒</h3>
+                <p>{{warning_message}}</p>
+                <div class="quota-info">
+                    <p>当前剩余额度</p>
+                    <div class="quota-amount">{{remaining_quota}}</div>
+                </div>
+            </div>
+            <p><strong>为了不影响您的正常使用，建议您及时充值：</strong></p>
+            <div style="text-align: center;">
+                <a href="{{topup_link}}" class="btn">立即充值</a>
+            </div>
+            <p>如果按钮无法点击，请复制以下链接到浏览器中打开：</p>
+            <div class="link-box">{{topup_link}}</div>
+
+            <p><strong>温馨提示：</strong></p>
+            <ul>
+                <li>当额度不足时，API调用将会失败</li>
+                <li>您可以在个人设置中调整预警阈值</li>
+                <li>如有疑问，请联系客服</li>
             </ul>
         </div>
         <div class="footer">

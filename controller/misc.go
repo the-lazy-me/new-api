@@ -227,6 +227,7 @@ func SendEmailVerification(c *gin.Context) {
 		VerificationCode: code,
 		SiteName:         common.SystemName,
 		ValidMinutes:     common.VerificationValidMinutes,
+		LogoUrl:          common.Logo,
 	}
 	err := common.SendTemplatedEmail(common.EmailTemplateVerification, subject, email, templateData)
 
@@ -278,6 +279,7 @@ func SendPasswordResetEmail(c *gin.Context) {
 		ResetLink:    link,
 		SiteName:     common.SystemName,
 		ValidMinutes: common.VerificationValidMinutes,
+		LogoUrl:      common.Logo,
 	}
 	err := common.SendTemplatedEmail(common.EmailTemplatePasswordReset, subject, email, templateData)
 

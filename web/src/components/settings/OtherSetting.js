@@ -29,6 +29,7 @@ const OtherSetting = () => {
     EmailTemplateEnabled: '',
     EmailTemplate_Verification: '',
     EmailTemplate_PasswordReset: '',
+    EmailTemplate_QuotaWarning: '',
   });
   let [loading, setLoading] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -80,6 +81,7 @@ const OtherSetting = () => {
     EmailTemplateEnabled: false,
     EmailTemplate_Verification: false,
     EmailTemplate_PasswordReset: false,
+    EmailTemplate_QuotaWarning: false,
   });
   const handleInputChange = async (value, e) => {
     const name = e.target.id;
@@ -265,6 +267,26 @@ const OtherSetting = () => {
     }
   };
 
+  // 邮件模板设置 - 额度预警邮件模板
+  const submitQuotaWarningTemplate = async () => {
+    try {
+      setLoadingInput((loadingInput) => ({
+        ...loadingInput,
+        EmailTemplate_QuotaWarning: true,
+      }));
+      await updateOption('EmailTemplate_QuotaWarning', inputs.EmailTemplate_QuotaWarning);
+      showSuccess(t('额度预警邮件模板已更新'));
+    } catch (error) {
+      console.error(t('额度预警邮件模板更新失败'), error);
+      showError(t('额度预警邮件模板更新失败'));
+    } finally {
+      setLoadingInput((loadingInput) => ({
+        ...loadingInput,
+        EmailTemplate_QuotaWarning: false,
+      }));
+    }
+  };
+
   // 获取模板变量
   const getTemplateVariables = async () => {
     try {
@@ -293,6 +315,12 @@ const OtherSetting = () => {
     preview = preview.replace(/\{\{reset_link\}\}/g, 'https://example.com/reset?token=example');
     preview = preview.replace(/\{\{site_name\}\}/g, inputs.SystemName || 'AI服务平台');
     preview = preview.replace(/\{\{valid_minutes\}\}/g, '15');
+    // 额度预警相关变量
+    preview = preview.replace(/\{\{warning_message\}\}/g, '您的额度即将用尽');
+    preview = preview.replace(/\{\{remaining_quota\}\}/g, '$5.00');
+    preview = preview.replace(/\{\{topup_link\}\}/g, 'https://example.com/topup');
+    // Logo 地址
+    preview = preview.replace(/\{\{logo_url\}\}/g, inputs.Logo || '/logo.png');
 
     setPreviewContent(preview);
     setCurrentTemplateType(templateType);
@@ -604,6 +632,8 @@ const OtherSetting = () => {
                   {t('验证码邮件：')} <code style={{ backgroundColor: '#e9ecef', padding: '2px 4px', borderRadius: '3px' }}>您的验证码为：{'{{verification_code}}'}</code>
                   <br />
                   {t('密码重置：')} <code style={{ backgroundColor: '#e9ecef', padding: '2px 4px', borderRadius: '3px' }}>点击 &lt;a href="{'{{reset_link}}'}"&gt;此处&lt;/a&gt; 重置密码</code>
+                  <br />
+                  {t('额度预警：')} <code style={{ backgroundColor: '#e9ecef', padding: '2px 4px', borderRadius: '3px' }}>{'{{warning_message}}'}，剩余额度：{'{{remaining_quota}}'}</code>
                 </div>
               </div>
 
@@ -658,6 +688,32 @@ const OtherSetting = () => {
                   {t('预览模板')}
                 </Button>
               </div>
+
+              <Form.TextArea
+                label={t('额度预警邮件模板')}
+                placeholder={t('在此输入额度预警邮件的HTML模板，支持上述模板变量')}
+                field={'EmailTemplate_QuotaWarning'}
+                onChange={handleInputChange}
+                style={{ fontFamily: 'JetBrains Mono, Consolas' }}
+                autosize={{ minRows: 10, maxRows: 20 }}
+                disabled={!isEmailTemplateEnabled()}
+              />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <Button
+                  onClick={submitQuotaWarningTemplate}
+                  loading={loadingInput['EmailTemplate_QuotaWarning']}
+                  disabled={!isEmailTemplateEnabled()}
+                >
+                  {t('保存预警模板')}
+                </Button>
+                <Button
+                  type="tertiary"
+                  onClick={() => previewTemplate('QuotaWarning')}
+                  disabled={!isEmailTemplateEnabled()}
+                >
+                  {t('预览模板')}
+                </Button>
+              </div>
             </Form.Section>
           </Card>
         </Form>
@@ -682,7 +738,11 @@ const OtherSetting = () => {
         <div dangerouslySetInnerHTML={{ __html: updateData.content }}></div>
       </Modal>
       <Modal
-        title={t('邮件模板预览') + ' - ' + (currentTemplateType === 'Verification' ? t('验证码邮件') : t('密码重置邮件'))}
+        title={t('邮件模板预览') + ' - ' + (
+          currentTemplateType === 'Verification' ? t('验证码邮件') :
+          currentTemplateType === 'PasswordReset' ? t('密码重置邮件') :
+          currentTemplateType === 'QuotaWarning' ? t('额度预警邮件') : t('邮件模板')
+        )}
         visible={showTemplatePreview}
         onCancel={() => setShowTemplatePreview(false)}
         width={800}
