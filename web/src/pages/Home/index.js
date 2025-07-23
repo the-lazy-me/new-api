@@ -1,6 +1,11 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Button, Typography, Card, Space } from '@douyinfe/semi-ui';
 import { API, showError, isMobile, showSuccess, getServerAddress, getLogo, getSystemName } from '../../helpers';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Typography, Tag, Input, ScrollList, ScrollItem } from '@douyinfe/semi-ui';
+import { API, showError, copy, showSuccess } from '../../helpers';
+import { useIsMobile } from '../../hooks/useIsMobile.js';
+import { API_ENDPOINTS } from '../../constants/common.constant';
 import { StatusContext } from '../../context/Status';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/Theme';
@@ -76,6 +81,7 @@ const Home = () => {
   const [homePageContentLoaded, setHomePageContentLoaded] = useState(false);
   const [homePageContent, setHomePageContent] = useState('');
   const [noticeVisible, setNoticeVisible] = useState(false);
+  const isMobile = useIsMobile();
   const isDemoSiteMode = statusState?.status?.demo_site_enabled || false;
   const docsLink = statusState?.status?.docs_link || '';
   const isChinese = i18n.language.startsWith('zh');

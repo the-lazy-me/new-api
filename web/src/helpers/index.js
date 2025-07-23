@@ -7,3 +7,4 @@ export * from './log';
 export * from './data';
 export * from './token';
 export * from './customModel';
+export * from './boolean';
