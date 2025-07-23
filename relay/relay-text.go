@@ -29,6 +29,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 辅助函数：格式化错误消息为中英文格式
+func formatErrorMessage(chinese, english string) string {
+	return fmt.Sprintf("%s(%s)", chinese, english)
+}
+
+// 辅助函数：格式化带参数的错误消息
+func formatErrorMessagef(chinese, english string, args ...interface{}) string {
+	chineseMsg := fmt.Sprintf(chinese, args...)
+	englishMsg := fmt.Sprintf(english, args...)
+	return fmt.Sprintf("%s(%s)", chineseMsg, englishMsg)
+}
+
 func getAndValidateTextRequest(c *gin.Context, relayInfo *relaycommon.RelayInfo) (*dto.GeneralOpenAIRequest, error) {
 	textRequest := &dto.GeneralOpenAIRequest{}
 	err := common.UnmarshalBodyReusable(c, textRequest)
@@ -43,10 +55,10 @@ func getAndValidateTextRequest(c *gin.Context, relayInfo *relaycommon.RelayInfo)
 	}
 
 	if textRequest.MaxTokens > math.MaxInt32/2 {
-		return nil, errors.New("max_tokens is invalid")
+		return nil, errors.New(formatErrorMessage("最大令牌数无效", "max_tokens is invalid"))
 	}
 	if textRequest.Model == "" {
-		return nil, errors.New("model is required")
+		return nil, errors.New(formatErrorMessage("模型参数必填", "model is required"))
 	}
 	if textRequest.WebSearchOptions != nil {
 		if textRequest.WebSearchOptions.SearchContextSize != "" {
@@ -56,7 +68,7 @@ func getAndValidateTextRequest(c *gin.Context, relayInfo *relaycommon.RelayInfo)
 				"low":    true,
 			}
 			if !validSizes[textRequest.WebSearchOptions.SearchContextSize] {
-				return nil, errors.New("invalid search_context_size, must be one of: high, medium, low")
+				return nil, errors.New(formatErrorMessage("搜索上下文大小无效，必须是以下之一：high, medium, low", "invalid search_context_size, must be one of: high, medium, low"))
 			}
 		} else {
 			textRequest.WebSearchOptions.SearchContextSize = "medium"
@@ -65,20 +77,20 @@ func getAndValidateTextRequest(c *gin.Context, relayInfo *relaycommon.RelayInfo)
 	switch relayInfo.RelayMode {
 	case relayconstant.RelayModeCompletions:
 		if textRequest.Prompt == "" {
-			return nil, errors.New("field prompt is required")
+			return nil, errors.New(formatErrorMessage("提示词字段必填", "field prompt is required"))
 		}
 	case relayconstant.RelayModeChatCompletions:
 		if len(textRequest.Messages) == 0 {
-			return nil, errors.New("field messages is required")
+			return nil, errors.New(formatErrorMessage("消息字段必填", "field messages is required"))
 		}
 	case relayconstant.RelayModeEmbeddings:
 	case relayconstant.RelayModeModerations:
 		if textRequest.Input == nil || textRequest.Input == "" {
-			return nil, errors.New("field input is required")
+			return nil, errors.New(formatErrorMessage("输入字段必填", "field input is required"))
 		}
 	case relayconstant.RelayModeEdits:
 		if textRequest.Instruction == "" {
-			return nil, errors.New("field instruction is required")
+			return nil, errors.New(formatErrorMessage("指令字段必填", "field instruction is required"))
 		}
 	}
 	relayInfo.IsStream = textRequest.Stream
@@ -166,7 +178,7 @@ func TextHelper(c *gin.Context) (newAPIError *types.NewAPIError) {
 
 	adaptor := GetAdaptor(relayInfo.ApiType)
 	if adaptor == nil {
-		return types.NewError(fmt.Errorf("invalid api type: %d", relayInfo.ApiType), types.ErrorCodeInvalidApiType)
+		return types.NewError(fmt.Errorf(formatErrorMessagef("无效的API类型：%d", "invalid api type: %d", relayInfo.ApiType)), types.ErrorCodeInvalidApiType)
 	}
 	adaptor.Init(relayInfo)
 	var requestBody io.Reader
@@ -254,7 +266,7 @@ func getPromptTokens(textRequest *dto.GeneralOpenAIRequest, info *relaycommon.Re
 	case relayconstant.RelayModeEmbeddings:
 		promptTokens = service.CountTokenInput(textRequest.Input, textRequest.Model)
 	default:
-		err = errors.New("unknown relay mode")
+		err = errors.New(formatErrorMessage("未知的中继模式", "unknown relay mode"))
 		promptTokens = 0
 	}
 	info.PromptTokens = promptTokens
@@ -283,11 +295,15 @@ func preConsumeQuota(c *gin.Context, preConsumedQuota int, relayInfo *relaycommo
 	if err != nil {
 		return 0, 0, types.NewError(err, types.ErrorCodeQueryDataError)
 	}
+	
+	// 获取站点地址并拼接充值链接
+	topupURL := setting.ServerAddress + "/console/topup"
+	
 	if userQuota <= 0 {
-		return 0, 0, types.NewErrorWithStatusCode(errors.New("user quota is not enough"), types.ErrorCodeInsufficientUserQuota, http.StatusForbidden)
+		return 0, 0, types.NewErrorWithStatusCode(errors.New(formatErrorMessagef("用户余额不足，请前往 %s 充值", "user quota is not enough, please go to %s to top up", topupURL)), types.ErrorCodeInsufficientUserQuota, http.StatusForbidden)
 	}
 	if userQuota-preConsumedQuota < 0 {
-		return 0, 0, types.NewErrorWithStatusCode(fmt.Errorf("pre-consume quota failed, user quota: %s, need quota: %s", common.FormatQuota(userQuota), common.FormatQuota(preConsumedQuota)), types.ErrorCodeInsufficientUserQuota, http.StatusForbidden)
+		return 0, 0, types.NewErrorWithStatusCode(fmt.Errorf(formatErrorMessagef("预扣费失败，用户余额：%s，需要余额：%s，请前往 %s 充值", "pre-consume quota failed, user quota: %s, need quota: %s, please go to %s to top up", common.FormatQuota(userQuota), common.FormatQuota(preConsumedQuota), topupURL)), types.ErrorCodeInsufficientUserQuota, http.StatusForbidden)
 	}
 	relayInfo.UserQuota = userQuota
 	if userQuota > 100*preConsumedQuota {

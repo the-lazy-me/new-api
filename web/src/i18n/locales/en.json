@@ -1846,7 +1846,7 @@
   "关于": "About",
   "支持任何适配 OpenAI 标准的应用，聊天、翻译、生产力等各种应用，一键接入，快速实现": "Supports any application compatible with OpenAI standards, including chat, translation, productivity tools, and more. One-click integration to quickly realize ",
   "简单几步，快速接入": "A few simple steps to quickly integrate with ",
-  "服务": "service"
+  "服务": "service",
   "未登录，使用默认分组倍率：": "Not logged in, using default group ratio: ",
   "该服务器地址将影响支付回调地址以及默认首页展示的地址，请确保正确配置": "This server address will affect the payment callback address and the address displayed on the default homepage, please ensure correct configuration",
   "密钥聚合模式": "Key aggregation mode",
@@ -1867,5 +1867,6 @@
   "启用全部密钥": "Enable all keys",
   "以充值价格显示": "Show with recharge price",
   "美元汇率（非充值汇率，仅用于定价页面换算）": "USD exchange rate (not recharge rate, only used for pricing page conversion)",
-  "美元汇率": "USD exchange rate"
+  "美元汇率": "USD exchange rate",
+  "低于此额度时将发送邮件提醒用户，并且令牌创建时提醒充值": "Send email reminder when quota falls below this, and remind users to recharge when creating tokens"
 }

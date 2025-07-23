@@ -5,6 +5,7 @@ import {
   showSuccess,
   timestamp2string,
   renderGroupOption,
+  renderQuota,
   renderQuotaWithPrompt,
   getModelCategories,
 } from '../../helpers';
@@ -38,6 +39,9 @@ const EditToken = (props) => {
   const { t } = useTranslation();
   const [statusState, statusDispatch] = useContext(StatusContext);
   const [loading, setLoading] = useState(false);
+  const [userQuota, setUserQuota] = useState(0);
+  const [warningThreshold, setWarningThreshold] = useState(500000);
+  const [showQuotaWarning, setShowQuotaWarning] = useState(false);
   const isMobile = useIsMobile();
   const formApiRef = useRef(null);
   const [models, setModels] = useState([]);
@@ -155,6 +159,31 @@ const EditToken = (props) => {
     setLoading(false);
   };
 
+  // 获取用户额度信息
+  const loadUserQuota = async () => {
+    try {
+      const userRes = await API.get('/api/user/self');
+      
+      if (userRes.data.success) {
+        const quota = userRes.data.data.quota;
+        setUserQuota(quota);
+        
+        // 从localStorage中的status获取阈值
+        let threshold = 500000; // 默认阈值
+        const status = localStorage.getItem('status');
+        if (status) {
+          const statusData = JSON.parse(status);
+          threshold = statusData.quota_remind_threshold || 500000;
+        }
+        
+        setWarningThreshold(threshold);
+        setShowQuotaWarning(quota < threshold);
+      }
+    } catch (error) {
+      console.error('获取用户额度信息失败:', error);
+    }
+  };
+
   useEffect(() => {
     if (formApiRef.current) {
       if (!isEdit) {
@@ -176,6 +205,12 @@ const EditToken = (props) => {
       formApiRef.current?.reset();
     }
   }, [props.visiable, props.editingToken.id]);
+
+  useEffect(() => {
+    if (props.visiable && !isEdit) {
+      loadUserQuota();
+    }
+  }, [props.visiable, isEdit]);
 
   const generateRandomSuffix = () => {
     const characters =
@@ -318,6 +353,33 @@ const EditToken = (props) => {
         >
           {({ values }) => (
             <div className='p-2'>
+              {/* 额度不足警告 */}
+              {!isEdit && showQuotaWarning && (
+                <Card className='!rounded-2xl shadow-sm border-0 mb-4 bg-orange-50 border-orange-200'>
+                  <div className='flex items-center'>
+                    <Avatar size='small' color='orange' className='mr-2 shadow-md'>
+                      <IconCreditCard size={16} />
+                    </Avatar>
+                    <div className='flex-1'>
+                      <Text className='text-orange-800 font-medium'>
+                        {t('额度不足提醒')}
+                      </Text>
+                      <div className='text-sm text-orange-600 mt-1'>
+                        {t('当前余额')} {renderQuota(userQuota)} {t('低于预警阈值')} {renderQuota(warningThreshold)}，{t('可能影响正常使用')}
+                      </div>
+                    </div>
+                    <Button
+                      type='primary'
+                      theme='solid'
+                      size='small'
+                      onClick={() => window.location.href = '/console/topup'}
+                    >
+                      {t('立即充值')}
+                    </Button>
+                  </div>
+                </Card>
+              )}
+
               {/* 基本信息 */}
               <Card className='!rounded-2xl shadow-sm border-0'>
                 <div className='flex items-center mb-2'>

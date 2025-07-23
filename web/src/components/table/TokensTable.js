@@ -105,21 +105,6 @@ const TokensTable = () => {
           return undefined;
         };
 
-        const quotaSuffix = record.unlimited_quota ? (
-          <div className='text-xs'>{t('无限额度')}</div>
-        ) : (
-          <div className='flex flex-col items-end'>
-            <span className='text-xs leading-none'>{`${renderQuota(remain)} / ${renderQuota(total)}`}</span>
-            <Progress
-              percent={percent}
-              stroke={getProgressColor(percent)}
-              aria-label='quota usage'
-              format={() => `${percent.toFixed(0)}%`}
-              style={{ width: '100%', marginTop: '1px', marginBottom: 0 }}
-            />
-          </div>
-        );
-
         const content = (
           <Tag
             color={tagColor}
@@ -133,7 +118,6 @@ const TokensTable = () => {
                 aria-label='token status switch'
               />
             }
-            suffixIcon={quotaSuffix}
           >
             {tagText}
           </Tag>
@@ -809,7 +793,43 @@ const TokensTable = () => {
           <Button
             type="primary"
             className="flex-1 md:flex-initial"
-            onClick={() => {
+            onClick={async () => {
+              try {
+                // 获取用户当前余额
+                const userRes = await API.get('/api/user/self');
+
+                if (userRes.data.success) {
+                  const userQuota = userRes.data.data.quota;
+
+                  // 从localStorage中的status获取阈值
+                  let warningThreshold = 500000; // 默认阈值
+                  const status = localStorage.getItem('status');
+                  if (status) {
+                    const statusData = JSON.parse(status);
+                    warningThreshold = statusData.quota_remind_threshold || 500000;
+                  }
+
+                  if (userQuota < warningThreshold) {
+                    Modal.warning({
+                      title: t('额度不足提醒'),
+                      content: t('当前额度过低，可能影响正常体验，建议立即前往钱包充值'),
+                      okText: t('前往充值'),
+                      cancelText: t('继续创建'),
+                      onOk: () => {
+                        window.location.href = '/console/topup';
+                      },
+                      onCancel: () => {
+                        setEditingToken({ id: undefined });
+                        setShowEdit(true);
+                      }
+                    });
+                    return;
+                  }
+                }
+              } catch (error) {
+                console.error('获取用户信息失败:', error);
+              }
+
               setEditingToken({
                 id: undefined,
               });

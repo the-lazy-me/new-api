@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   new-api:
-    image: thelazy/new-api:latest
+    image: new-api-arm64
     container_name: new-api
     restart: always
     command: --log-dir /app/logs

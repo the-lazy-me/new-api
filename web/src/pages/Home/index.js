@@ -1,9 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Button, Typography, Card, Space } from '@douyinfe/semi-ui';
-import { API, showError, isMobile, showSuccess, getServerAddress, getLogo, getSystemName } from '../../helpers';
-import React, { useContext, useEffect, useState } from 'react';
-import { Button, Typography, Tag, Input, ScrollList, ScrollItem } from '@douyinfe/semi-ui';
-import { API, showError, copy, showSuccess } from '../../helpers';
+import { Button, Typography, Card, Space, Tag, Input, ScrollList, ScrollItem } from '@douyinfe/semi-ui';
+import { API, showError, showSuccess, getServerAddress, getLogo, getSystemName, copy } from '../../helpers';
 import { useIsMobile } from '../../hooks/useIsMobile.js';
 import { API_ENDPOINTS } from '../../constants/common.constant';
 import { StatusContext } from '../../context/Status';
@@ -160,7 +157,7 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
             <Link to="/console">
               <Button
-                size={isMobile() ? "default" : "large"}
+                size={isMobile ? "default" : "large"}
                 icon={<IconPlay />}
                 className="!rounded-full !px-6 sm:!px-8 !py-2 sm:!py-3 !text-base sm:!text-lg !font-medium w-full sm:w-auto !bg-blue-600 !text-white !border-blue-600 hover:!bg-blue-700 hover:!border-blue-700"
                 style={{
@@ -174,7 +171,7 @@ const Home = () => {
             </Link>
             {docsLink && (
               <Button
-                size={isMobile() ? "default" : "large"}
+                size={isMobile ? "default" : "large"}
                 icon={<IconFile />}
                 className="!rounded-full !px-6 sm:!px-8 !py-2 sm:!py-3 !text-base sm:!text-lg !font-medium w-full sm:w-auto"
                 onClick={() => window.open(docsLink, '_blank')}
@@ -751,7 +748,7 @@ const Home = () => {
       <NoticeModal
         visible={noticeVisible}
         onClose={() => setNoticeVisible(false)}
-        isMobile={isMobile()}
+        isMobile={isMobile}
       />
       {homePageContentLoaded && homePageContent === '' ? (
         <div className="w-full overflow-x-hidden">

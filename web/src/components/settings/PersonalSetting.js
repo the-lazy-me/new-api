@@ -98,7 +98,7 @@ const PersonalSetting = () => {
   const MODELS_DISPLAY_COUNT = 25; // 默认显示的模型数量
   const [notificationSettings, setNotificationSettings] = useState({
     warningType: 'email',
-    warningThreshold: 100000,
+    warningThreshold: 500000,
     webhookUrl: '',
     webhookSecret: '',
     notificationEmail: '',
@@ -1211,7 +1211,6 @@ const PersonalSetting = () => {
                               className="!rounded-lg w-full max-w-xs"
                               placeholder={t('请输入预警额度')}
                               data={[
-                                { value: 100000, label: '0.2$' },
                                 { value: 500000, label: '1$' },
                                 { value: 1000000, label: '5$' },
                                 { value: 5000000, label: '10$' },

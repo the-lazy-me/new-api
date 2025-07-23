@@ -105,7 +105,7 @@ export default function SettingsMonitoring(props) {
                   step={1}
                   min={0}
                   suffix={'Token'}
-                  extraText={t('低于此额度时将发送邮件提醒用户')}
+                  extraText={t('低于此额度时将发送邮件提醒用户，并且令牌创建时提醒充值')}
                   placeholder={''}
                   field={'QuotaRemindThreshold'}
                   onChange={(value) =>

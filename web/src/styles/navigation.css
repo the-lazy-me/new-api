@@ -2,6 +2,7 @@
 /* 导航项样式 */
 .semi-navigation-item {
   margin-bottom: 4px !important;
+  padding: 4px 12px !important;
 }
 
 .semi-navigation-item-icon {
@@ -13,6 +14,11 @@
   margin-right: 0;
 }
 
+.semi-navigation-sub-title {
+  padding: 0 !important;
+}
+
+.semi-navigation-item,
 .semi-navigation-sub-title {
   height: 100% !important;
 }

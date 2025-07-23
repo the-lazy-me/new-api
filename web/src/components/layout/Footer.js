@@ -37,7 +37,7 @@ const FooterBar = () => {
 
         {/* 技术支持信息 */}
         <div className="flex flex-wrap items-center justify-center gap-1 text-xs">
-          <span className="!text-semi-color-text-1">Powered by</span>
+          <span className="!text-semi-color-text-1">Based on</span>
           <a
             href="https://github.com/QuantumNous/new-api"
             target="_blank"

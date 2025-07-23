@@ -471,12 +471,12 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
               <Button
                 icon={
                   isConsoleRoute
-                    ? (styleState.showSider ? <IconClose size="default" /> : <IconMenu size="default" />)
+                    ? ((isMobile ? drawerOpen : !collapsed) ? <IconClose size="default" /> : <IconMenu size="default" />)
                     : (mobileMenuOpen ? <IconClose size="default" /> : <IconMenu size="default" />)
                 }
                 aria-label={
                   isConsoleRoute
-                    ? ((isMobile ? drawerOpen : collapsed) ? t('关闭侧边栏') : t('打开侧边栏'))
+                    ? ((isMobile ? drawerOpen : !collapsed) ? t('关闭侧边栏') : t('打开侧边栏'))
                     : (mobileMenuOpen ? t('关闭菜单') : t('打开菜单'))
                 }
                 onClick={() => {
